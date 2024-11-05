@@ -1,6 +1,6 @@
 // components/GlobalNav.tsx
 import Link from "next/link";
-import { Home, MessageSquare, Bell, User } from "lucide-react";
+import { Home, MessageSquare, Bell, User, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 
 export function GlobalNav() {
@@ -19,13 +19,13 @@ export function GlobalNav() {
             </div>
 
             {/* Centered Navigation Links */}
-            <div className="flex justify-around w-full md:w-auto space-x-8">
+            <div className="flex justify-around ml-auto md:w-auto space-x-8">
                 <Link
                     href="/main"
                     className="flex flex-col items-center md:flex-row md:space-x-2"
                 >
                     <Home className="w-6 h-6" />
-                    <span>렌탈</span>
+                    <span>제품</span>
                 </Link>
                 <Link
                     href="/community"
@@ -39,7 +39,14 @@ export function GlobalNav() {
                     className="flex flex-col items-center md:flex-row md:space-x-2"
                 >
                     <Bell className="w-6 h-6" />
-                    <span>알람</span>
+                    <span>알림</span>
+                </Link>
+                <Link
+                    href="/cart"
+                    className="flex flex-col items-center md:flex-row md:space-x-2"
+                >
+                    <ShoppingCart className="w-6 h-6" />
+                    <span>장바구니</span>
                 </Link>
                 <Link
                     href="/mypage"
