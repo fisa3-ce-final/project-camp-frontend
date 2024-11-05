@@ -3,9 +3,12 @@ import { Tent, Utensils, Bed, Sofa, Sun } from "lucide-react";
 
 export function MainSidebar() {
     return (
-        <div className="space-y-4">
-            <h2 className="text-lg font-semibold mb-2">카테고리</h2>
-            <ul className="space-y-4">
+        <div className="space-y-6">
+            <h2 className="text-xl font-bold mb-4">캠핑 용품 렌탈 품목</h2>
+            <ul className="space-y-6">
+                <li className="flex items-center space-x-2">
+                    <span>전체 카테고리</span>
+                </li>
                 <li className="flex items-center space-x-2">
                     <Tent className="w-5 h-5" />
                     <span>텐트</span>
