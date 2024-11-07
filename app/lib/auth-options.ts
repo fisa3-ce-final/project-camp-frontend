@@ -12,6 +12,52 @@ declare module "next-auth/jwt" {
     }
 }
 
+async function refreshAccessToken(token: JWT) {
+    try {
+        console.log("Refreshing access token");
+        const response = await fetch("https://oauth2.googleapis.com/token", {
+            method: "POST",
+            body: new URLSearchParams({
+                client_id: process.env.GOOGLE_CLIENT_ID!,
+                client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+                grant_type: "refresh_token",
+                refresh_token: token.refresh_token!,
+            }),
+        });
+
+        const tokensOrError = await response.json();
+        console.log("tokensOrError", tokensOrError);
+
+        if (!response.ok) throw tokensOrError;
+
+        const newTokens = tokensOrError as {
+            id_token: string;
+            access_token: string;
+            expires_in: number;
+            refresh_token?: string;
+        };
+
+        token.id_token = newTokens.id_token;
+        token.access_token = newTokens.access_token;
+        token.accessTokenExpires = Date.now() + newTokens.expires_in * 1000;
+
+        // Some providers only issue refresh tokens once, so preserve if we did not get a new one
+        if (newTokens.refresh_token)
+            token.refresh_token = newTokens.refresh_token;
+
+        console.log("Id token refreshed", token);
+
+        return token;
+    } catch (error) {
+        console.log(error);
+
+        return {
+            ...token,
+            error: "RefreshAccessTokenError",
+        };
+    }
+}
+
 export const authOptions: AuthOptions = {
     providers: [
         CognitoProvider({
@@ -28,8 +74,20 @@ export const authOptions: AuthOptions = {
                 token.id_token = account.id_token!;
                 token.provider = account.provider!;
                 token.refresh_token = account.refresh_token!;
+
+                token.accessTokenExpires = account.expires_at! * 1000;
+
+                console.log("JWT", token.id_token);
+                console.log("expires_at", account.expires_at! * 1000);
             }
-            return token;
+
+            if (Date.now() < token.accessTokenExpires) {
+                return token;
+            }
+
+            // console.log("refreshing");
+
+            return refreshAccessToken(token);
         },
         async session({ session, token }) {
             session.user = {
@@ -38,7 +96,7 @@ export const authOptions: AuthOptions = {
             };
             session.error = token.error;
 
-            console.log("id_token", token.id_token);
+            // console.log("id_token", token.id_token);
 
             return session;
         },
@@ -52,6 +110,15 @@ export const authOptions: AuthOptions = {
                 try {
                     // const status = await signIn(account.id_token!);
                     // console.log("Sign in status", status);
+                    console.log("fetch backend/hello");
+                    const res = await fetch("http://localhost:8080/hello", {
+                        method: "GET",
+                        headers: new Headers({
+                            Authorization: `Bearer ${account.id_token}`,
+                        }),
+                    });
+                    console.log(res.status);
+                    res.text().then(console.log);
                 } catch (e) {
                     console.error((e as any).message);
                 }
