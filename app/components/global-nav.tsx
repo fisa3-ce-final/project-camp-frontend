@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Home, MessageSquare, Bell, User, ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import Signout from "./signout";
 
 export function GlobalNav() {
     return (
@@ -55,6 +56,7 @@ export function GlobalNav() {
                     <User className="w-6 h-6" />
                     <span>마이페이지</span>
                 </Link>
+                <Signout />
             </div>
         </nav>
     );
