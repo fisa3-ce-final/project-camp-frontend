@@ -9,6 +9,7 @@ import {
 import TestButton from "@/app/components/test-button";
 import { TestForm } from "@/app/components/test-form";
 import Link from "next/link";
+import Signin from "./components/signin";
 
 export default function LandingPage() {
     return (
@@ -21,9 +22,7 @@ export default function LandingPage() {
                 <p className="text-lg md:text-2xl mb-8">
                     Discover the future of [Your Service or Product] today.
                 </p>
-                <Link href="/main">
-                    <Button size="lg">Get Started</Button>
-                </Link>
+                <Signin />
             </section>
             {/* <TestButton /> */}
             {/* <TestForm /> */}
