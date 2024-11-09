@@ -152,7 +152,7 @@ import { useRouter } from "next/navigation";
 export default function CommunityPostForm() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [category, setCategory] = useState("자유");
+    const [category, setCategory] = useState("FREE");
     const [images, setImages] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const router = useRouter();
