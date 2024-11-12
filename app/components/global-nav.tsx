@@ -29,7 +29,7 @@ export function GlobalNav() {
                     <span>제품</span>
                 </Link>
                 <Link
-                    href="/community"
+                    href="/community/free"
                     className="flex flex-col items-center md:flex-row md:space-x-2"
                 >
                     <MessageSquare className="w-6 h-6" />
