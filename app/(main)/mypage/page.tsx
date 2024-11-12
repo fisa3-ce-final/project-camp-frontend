@@ -9,10 +9,10 @@ import Signout from "@/app/components/signout";
 
 export default function MypagePage() {
     const [isEditing, setIsEditing] = useState(false);
-    const [nickname, setNickname] = useState("컴핑러버");
+    const [nickname, setNickname] = useState("캠핑러버");
     const [email] = useState("camper@example.com"); // 이메일은 수정 불가
     const [phone, setPhone] = useState("010-1234-5678");
-    const [address, setAddress] = useState("서울시 강남구 컴핑로 123");
+    const [address, setAddress] = useState("서울시 강남구 캠핑로 123");
     const [avatar, setAvatar] = useState<string | null>(null); // 아바타 이미지 상태
     const [couponCount] = useState(5);
 
@@ -37,6 +37,10 @@ export default function MypagePage() {
             const file = e.target.files[0];
             setAvatar(URL.createObjectURL(file));
         }
+    };
+
+    const handleCouponClick = () => {
+        // 쿠폰 보유 현황 버튼 클릭 시 동작 설정
     };
 
     return (
@@ -130,10 +134,12 @@ export default function MypagePage() {
                     )}
                 </section>
 
-                {/* 쿠폰 보유 현황 */}
+                {/* 쿠폰 보유 현황 버튼 */}
                 <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">쿠폰 보유 현황</h2>
-                    <p className="text-lg font-bold">{couponCount}장</p>
+                    <h2 className="text-lg font-bold">쿠폰 보유</h2>
+                    <Button variant="outline" onClick={handleCouponClick}>
+                        {couponCount}장
+                    </Button>
                 </section>
 
                 {/* 대여중인 물품 버튼 */}
