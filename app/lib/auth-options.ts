@@ -108,15 +108,16 @@ export const authOptions: AuthOptions = {
             console.log("Sign in", profile);
             if (account) {
                 try {
-                    // const status = await signIn(account.id_token!);
-                    // console.log("Sign in status", status);
-                    console.log("fetch backend/hello");
-                    const res = await fetch("http://localhost:8080/hello", {
-                        method: "GET",
-                        headers: new Headers({
-                            Authorization: `Bearer ${account.id_token}`,
-                        }),
-                    });
+                    console.log("sign in");
+                    const res = await fetch(
+                        process.env.BACKEND_URL + "/users/signin",
+                        {
+                            method: "POST",
+                            headers: new Headers({
+                                Authorization: `Bearer ${account.id_token}`,
+                            }),
+                        }
+                    );
                     console.log(res.status);
                     res.text().then(console.log);
                 } catch (e) {

@@ -56,7 +56,6 @@ export function GlobalNav() {
                     <User className="w-6 h-6" />
                     <span>마이페이지</span>
                 </Link>
-                <Signout />
             </div>
         </nav>
     );
