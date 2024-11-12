@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Home, MessageSquare, Bell, User, ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import Signout from "./signout";
 
 export function GlobalNav() {
     return (
@@ -19,7 +20,7 @@ export function GlobalNav() {
             </div>
 
             {/* Centered Navigation Links */}
-            <div className="flex justify-around ml-auto md:w-auto space-x-8">
+            <div className="flex justify-around w-full  md:ml-auto md:w-auto space-x-8">
                 <Link
                     href="/main"
                     className="flex flex-col items-center md:flex-row md:space-x-2"
