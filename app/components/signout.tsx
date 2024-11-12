@@ -6,7 +6,7 @@ import { FC } from "react";
 
 interface SignoutProps {}
 
-const Signout: FC<SignoutProps> = async ({}) => {
+const Signout: FC<SignoutProps> = ({}) => {
     return (
         <Button
             size={"lg"}

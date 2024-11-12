@@ -4,15 +4,15 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil } from "lucide-react"; // Pencil 아이콘 불러오기
+import { Pencil } from "lucide-react";
 import Signout from "@/app/components/signout";
 
 export default function MypagePage() {
     const [isEditing, setIsEditing] = useState(false);
-    const [nickname, setNickname] = useState("캠핑러버");
+    const [nickname, setNickname] = useState("컴핑러버");
     const [email] = useState("camper@example.com"); // 이메일은 수정 불가
     const [phone, setPhone] = useState("010-1234-5678");
-    const [address, setAddress] = useState("서울시 강남구 캠핑로 123");
+    const [address, setAddress] = useState("서울시 강남구 컴핑로 123");
     const [avatar, setAvatar] = useState<string | null>(null); // 아바타 이미지 상태
     const [couponCount] = useState(5);
 
@@ -67,7 +67,7 @@ export default function MypagePage() {
                                 className="absolute opacity-0 w-full h-full top-0 left-0 cursor-pointer"
                             />
                             {/* 연필 아이콘 */}
-                            <div className="absolute top-2 right-2 p-1 bg-gray-700 rounded-full text-white">
+                            <div className="absolute top-[-3.5rem] left-[-3.5rem] p-1 bg-gray-700 rounded-full text-white">
                                 <Pencil size={20} />
                             </div>
                         </label>
