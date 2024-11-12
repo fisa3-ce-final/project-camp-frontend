@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pencil } from "lucide-react";
 import Signout from "@/app/components/signout";
+import { UserGetResponse } from "@/app/types/user-get-response";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MypagePage() {
+    const [userData, setUserData] = useState<UserGetResponse | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [nickname, setNickname] = useState("캠핑러버");
-    const [email] = useState("camper@example.com"); // 이메일은 수정 불가
-    const [phone, setPhone] = useState("010-1234-5678");
-    const [address, setAddress] = useState("서울시 강남구 캠핑로 123");
-    const [avatar, setAvatar] = useState<string | null>(null); // 아바타 이미지 상태
-    const [couponCount] = useState(5);
+    const [nickname, setNickname] = useState("");
+    const [phone, setPhone] = useState("");
+    const [address, setAddress] = useState("");
+    const [avatar, setAvatar] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetch("/backend/users/me")
+            .then((res) => res.json())
+            .then((data: UserGetResponse) => {
+                setUserData(data);
+                setNickname(data.nickname);
+                setPhone(data.phone);
+                setAddress(data.address);
+                setAvatar(data.imageUrl);
+            })
+            .catch((error) =>
+                console.error("사용자 정보 가져오기 실패:", error)
+            );
+    }, []);
 
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
@@ -39,9 +55,35 @@ export default function MypagePage() {
         }
     };
 
-    const handleCouponClick = () => {
-        // 쿠폰 보유 현황 버튼 클릭 시 동작 설정
-    };
+    const handleCouponMoreClick = () => alert("쿠폰 보유 현황 더보기");
+    const handleRentMoreClick = () => alert("대여중인 물품 더보기");
+    const handleLendMoreClick = () => alert("빌려준 물품 더보기");
+    const handleOrderHistoryClick = () => alert("주문 내역 더보기");
+
+    if (!userData) {
+        return (
+            <div className="flex justify-center h-[2000px] bg-gray-100 p-8">
+                <div className="w-full max-w-3xl space-y-8">
+                    <div className="flex items-center space-x-4">
+                        <Skeleton className="w-32 h-32 rounded-full" />
+                        <div className="flex-1 space-y-4 py-1">
+                            <Skeleton className="h-6 w-3/4" />
+                            <Skeleton className="h-6 w-1/2" />
+                        </div>
+                    </div>
+                    <Skeleton className="h-6 w-1/3 mt-6" />
+                    <Skeleton className="h-6 w-2/3 mt-6" />
+                    <Skeleton className="h-6 w-1/2 mt-6" />
+                    <Skeleton className="h-6 w-1/4 mt-6" />
+                    <div className="flex justify-between mt-6">
+                        <Skeleton className="h-10 w-24" />
+                        <Skeleton className="h-10 w-24" />
+                        <Skeleton className="h-10 w-24" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex justify-center h-full bg-gray-100">
@@ -70,7 +112,6 @@ export default function MypagePage() {
                                 onChange={handleAvatarChange}
                                 className="absolute opacity-0 w-full h-full top-0 left-0 cursor-pointer"
                             />
-                            {/* 연필 아이콘 */}
                             <div className="absolute top-[-3.5rem] left-[-3.5rem] p-1 bg-gray-700 rounded-full text-white">
                                 <Pencil size={20} />
                             </div>
@@ -101,7 +142,7 @@ export default function MypagePage() {
                 {/* 이메일 표시 */}
                 <section className="border-t pt-4">
                     <h2 className="text-lg font-bold">이메일</h2>
-                    <p className="text-lg">{email}</p>
+                    <p className="text-lg">{userData.email}</p>
                 </section>
 
                 {/* 핸드폰 번호 */}
@@ -134,18 +175,26 @@ export default function MypagePage() {
                     )}
                 </section>
 
-                {/* 쿠폰 보유 현황 버튼 */}
+                {/* 쿠폰 보유 현황 */}
                 <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">쿠폰 보유</h2>
-                    <Button variant="outline" onClick={handleCouponClick}>
-                        {couponCount}장
+                    <h2 className="text-lg font-bold">쿠폰 보유 현황</h2>
+                    <Button
+                        variant="outline"
+                        className="w-24"
+                        onClick={handleCouponMoreClick}
+                    >
+                        더보기
                     </Button>
                 </section>
 
                 {/* 대여중인 물품 버튼 */}
                 <section className="flex justify-between items-center border-t pt-4">
                     <h2 className="text-lg font-bold">대여중인 물품</h2>
-                    <Button variant="outline" className="w-24">
+                    <Button
+                        variant="outline"
+                        className="w-24"
+                        onClick={handleRentMoreClick}
+                    >
                         더보기
                     </Button>
                 </section>
@@ -153,7 +202,11 @@ export default function MypagePage() {
                 {/* 빌려준 물품 버튼 */}
                 <section className="flex justify-between items-center border-t pt-4">
                     <h2 className="text-lg font-bold">빌려준 물품</h2>
-                    <Button variant="outline" className="w-24">
+                    <Button
+                        variant="outline"
+                        className="w-24"
+                        onClick={handleLendMoreClick}
+                    >
                         더보기
                     </Button>
                 </section>
@@ -161,7 +214,11 @@ export default function MypagePage() {
                 {/* 주문 내역 버튼 */}
                 <section className="flex justify-between items-center border-t pt-4">
                     <h2 className="text-lg font-bold">주문 내역</h2>
-                    <Button variant="outline" className="w-24">
+                    <Button
+                        variant="outline"
+                        className="w-24"
+                        onClick={handleOrderHistoryClick}
+                    >
                         더보기
                     </Button>
                 </section>
