@@ -8,6 +8,8 @@ import { Pencil } from "lucide-react";
 import Signout from "@/app/components/signout";
 import { UserGetResponse } from "@/app/types/user-get-response";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 export default function MypagePage() {
     const [userData, setUserData] = useState<UserGetResponse | null>(null);
@@ -16,9 +18,20 @@ export default function MypagePage() {
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
+    const { data } = useSession();
 
     useEffect(() => {
-        fetch("/backend/users/me")
+        if (!data) {
+            return;
+        }
+
+        fetch("/backend/users/me", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${data?.user.id_token}`,
+            },
+        })
             .then((res) => res.json())
             .then((data: UserGetResponse) => {
                 setUserData(data);
@@ -30,7 +43,7 @@ export default function MypagePage() {
             .catch((error) =>
                 console.error("사용자 정보 가져오기 실패:", error)
             );
-    }, []);
+    }, [data]);
 
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
