@@ -10,7 +10,7 @@ export function GlobalNav() {
             {/* Company Logo - only visible on desktop */}
             <div className="hidden md:block absolute left-4">
                 <Link href="/" className="flex">
-                    {/* <Image
+                    <Image
                         src="/logo-img.png"
                         alt="Company Logo"
                         width={40}
@@ -22,12 +22,6 @@ export function GlobalNav() {
                         width={120}
                         height={40}
                         className="ml-2"
-                    /> */}
-                    <Image
-                        src="/logo-with-text.png"
-                        alt="Company Logo"
-                        width={80}
-                        height={40}
                     />
                 </Link>
             </div>
