@@ -116,6 +116,7 @@ export const authOptions: AuthOptions = {
                         method: "POST",
                         headers: new Headers({
                             Authorization: `Bearer ${account.id_token}`,
+                            "Content-Type": "application/json",
                         }),
                         body: JSON.stringify({
                             provider: account.provider,
