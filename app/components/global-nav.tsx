@@ -9,12 +9,19 @@ export function GlobalNav() {
         <nav className="bg-gray-100 border-t border-gray-200 md:border-t-0 md:border-b p-4 flex justify-between items-center md:justify-center relative">
             {/* Company Logo - only visible on desktop */}
             <div className="hidden md:block absolute left-4">
-                <Link href="/">
+                <Link href="/" className="flex">
                     <Image
-                        src="/logo.png"
+                        src="/logo-img.png"
                         alt="Company Logo"
                         width={40}
                         height={40}
+                    />
+                    <Image
+                        src="/logo-text.png"
+                        alt="Company Logo Text"
+                        width={120}
+                        height={40}
+                        className="ml-2"
                     />
                 </Link>
             </div>
