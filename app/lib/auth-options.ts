@@ -83,16 +83,13 @@ export const authOptions: AuthOptions = {
                 token.refresh_token = account.refresh_token!;
 
                 token.accessTokenExpires = account.expires_at! * 1000;
-
-                console.log("JWT", token.id_token);
-                console.log("expires_at", account.expires_at! * 1000);
             }
 
             if (Date.now() < token.accessTokenExpires) {
                 return token;
             }
 
-            // console.log("refreshing");
+            console.log("refreshing");
 
             return refreshAccessToken(token);
         },
@@ -119,6 +116,10 @@ export const authOptions: AuthOptions = {
                         method: "POST",
                         headers: new Headers({
                             Authorization: `Bearer ${account.id_token}`,
+                            "Content-Type": "application/json",
+                        }),
+                        body: JSON.stringify({
+                            provider: account.provider,
                         }),
                         cache: "no-cache",
                     });
