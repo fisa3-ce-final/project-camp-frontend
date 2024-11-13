@@ -63,7 +63,7 @@ export function MyPage({ userData }: MyPageProps) {
             formData.append("phone", tempPhone);
             formData.append("address", tempAddress);
             if (avatarFile) {
-                formData.append("avatar", avatarFile); // 이미지 파일 추가
+                formData.append("imageFile", avatarFile); // 이미지 파일 추가
             }
 
             const response = await fetch(
@@ -88,7 +88,7 @@ export function MyPage({ userData }: MyPageProps) {
                     const data = await response.json();
                     setAvatar(data.imageUrl || avatar); // 서버 응답에 따라 조정
                 }
-                setAvatarFile(null);
+                // setAvatarFile(null);
                 setIsEditing(false);
             } else {
                 console.error("Failed to save changes");

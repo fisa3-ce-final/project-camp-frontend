@@ -31,7 +31,7 @@ interface PageProps {}
 const Page: FC<PageProps> = async ({}) => {
     // 서버사이드에서 사용자 데이터를 받아옴
     const userData = await getUserData();
-    console.log("userData", userData);
+    // console.log("userData", userData);
     return (
         <>
             <MyPage userData={userData} />
