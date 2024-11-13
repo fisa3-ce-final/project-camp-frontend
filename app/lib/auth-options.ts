@@ -15,15 +15,21 @@ declare module "next-auth/jwt" {
 async function refreshAccessToken(token: JWT) {
     try {
         console.log("Refreshing access token");
-        const response = await fetch("https://oauth2.googleapis.com/token", {
-            method: "POST",
-            body: new URLSearchParams({
-                client_id: process.env.GOOGLE_CLIENT_ID!,
-                client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-                grant_type: "refresh_token",
-                refresh_token: token.refresh_token!,
-            }),
-        });
+        const response = await fetch(
+            process.env.COGNITO_DOMAIN + "/oauth2/token",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    client_id: process.env.COGNITO_CLIENT_ID ?? "",
+                    client_secret: process.env.COGNITO_CLIENT_SECRET ?? "",
+                    grant_type: "refresh_token",
+                    refresh_token: token.refresh_token,
+                }),
+            }
+        );
 
         const tokensOrError = await response.json();
         console.log("tokensOrError", tokensOrError);
@@ -70,6 +76,7 @@ export const authOptions: AuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, user, account, profile }) {
+            console.log("token!", token);
             if (account) {
                 token.id_token = account.id_token!;
                 token.provider = account.provider!;
