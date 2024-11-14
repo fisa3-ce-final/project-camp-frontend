@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface MyPageProps {
     userData: UserGetResponse | null;
@@ -196,7 +197,13 @@ export function MyPage({ userData }: MyPageProps) {
                                 className="w-32 h-32 object-cover rounded-full"
                             />
                             <AvatarFallback className="w-32 h-32 flex items-center justify-center text-2xl font-bold text-white bg-gray-400 rounded-full">
-                                {nickname.charAt(0).toUpperCase()}
+                                <Image
+                                    src="/료이키텐카이.png"
+                                    alt="아바타"
+                                    width={128}
+                                    height={128}
+                                    className="w-32 h-32 object-cover rounded-full"
+                                />
                             </AvatarFallback>
                         </Avatar>
                         {isEditing && (
