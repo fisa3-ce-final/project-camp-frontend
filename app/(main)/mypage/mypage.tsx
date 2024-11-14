@@ -63,7 +63,6 @@ export function MyPage({ userData }: MyPageProps) {
             formData.append("phone", tempPhone);
             formData.append("address", tempAddress);
             if (avatarFile) {
-                console.log("ASGSG");
                 formData.append("imageFile", avatarFile); // 이미지 파일 추가
             }
 
