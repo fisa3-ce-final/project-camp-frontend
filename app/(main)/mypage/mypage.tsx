@@ -63,7 +63,6 @@ export function MyPage({ userData }: MyPageProps) {
             formData.append("phone", tempPhone);
             formData.append("address", tempAddress);
             if (avatarFile) {
-                console.log("ASGSG");
                 formData.append("imageFile", avatarFile); // 이미지 파일 추가
             }
 
@@ -76,9 +75,9 @@ export function MyPage({ userData }: MyPageProps) {
                         // 'Content-Type'을 설정하지 마세요. FormData는 자동으로 설정됩니다.
                     },
                     body: formData,
+                    cache: "no-cache",
                 }
             );
-
             if (response.ok) {
                 // 변경사항을 최종 저장
                 setNickname(tempNickname);
@@ -134,6 +133,7 @@ export function MyPage({ userData }: MyPageProps) {
                     headers: {
                         Authorization: `Bearer ${session?.user.id_token}`,
                     },
+                    cache: "no-cache",
                 }
             );
 

@@ -138,7 +138,6 @@
 //     );
 // }
 
-
 "use client";
 
 import { useState } from "react";
@@ -168,7 +167,9 @@ export default function CommunityPostForm() {
 
         setImages((prevImages) => [...prevImages, ...selectedFiles]);
 
-        const newPreviewUrls = selectedFiles.map((file) => URL.createObjectURL(file));
+        const newPreviewUrls = selectedFiles.map((file) =>
+            URL.createObjectURL(file)
+        );
         setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
     };
 
@@ -190,6 +191,7 @@ export default function CommunityPostForm() {
         const res = await fetch("/backend/community", {
             method: "POST",
             body: formData,
+            cache: "no-cache",
         });
 
         if (res.ok) {
@@ -203,9 +205,14 @@ export default function CommunityPostForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-4 space-y-6 border rounded-md shadow-sm">
+        <form
+            onSubmit={handleSubmit}
+            className="max-w-xl mx-auto p-4 space-y-6 border rounded-md shadow-sm"
+        >
             <div>
-                <Label htmlFor="title" className="block text-lg font-semibold">제목</Label>
+                <Label htmlFor="title" className="block text-lg font-semibold">
+                    제목
+                </Label>
                 <Input
                     id="title"
                     type="text"
@@ -218,7 +225,12 @@ export default function CommunityPostForm() {
             </div>
 
             <div>
-                <Label htmlFor="content" className="block text-lg font-semibold">내용</Label>
+                <Label
+                    htmlFor="content"
+                    className="block text-lg font-semibold"
+                >
+                    내용
+                </Label>
                 <Textarea
                     id="content"
                     placeholder="내용을 입력하세요"
@@ -268,10 +280,14 @@ export default function CommunityPostForm() {
                         </div>
                     ))}
                 </div>
-                <p className="text-sm text-gray-500 mt-2">최대 4장까지 업로드 가능합니다.</p>
+                <p className="text-sm text-gray-500 mt-2">
+                    최대 4장까지 업로드 가능합니다.
+                </p>
             </div>
 
-            <Button type="submit" className="w-full">게시글 등록</Button>
+            <Button type="submit" className="w-full">
+                게시글 등록
+            </Button>
         </form>
     );
 }

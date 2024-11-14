@@ -58,7 +58,11 @@ export default function CommunityPostDetailPage() {
                 .then((data) => {
                     if (data) {
                         setPost(data);
-                        setIsLiked(data.isLikedByUser || localStorage.getItem(`post-${postId}-liked`) === "true");
+                        setIsLiked(
+                            data.isLikedByUser ||
+                                localStorage.getItem(`post-${postId}-liked`) ===
+                                    "true"
+                        );
                     }
                 })
                 .catch((error) => console.error("게시글 조회 실패:", error));
@@ -68,10 +72,13 @@ export default function CommunityPostDetailPage() {
     }, [postId, showModal, currentPage]);
 
     const loadComments = (page: number) => {
-        fetch(`/backend/community/${postId}/comments?page=${page}&size=${COMMENTS_PER_PAGE}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        })
+        fetch(
+            `/backend/community/${postId}/comments?page=${page}&size=${COMMENTS_PER_PAGE}`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }
+        )
             .then((res) => res.json())
             .then((data) => {
                 setComments(Array.isArray(data.content) ? data.content : []);
@@ -86,17 +93,25 @@ export default function CommunityPostDetailPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`/backend/community/${post.id}/like?userId=${userId}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-            });
+            const response = await fetch(
+                `/backend/community/${post.id}/like?userId=${userId}`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
 
             if (response.ok) {
                 const updatedIsLiked = await response.json();
-                const updatedLikes = updatedIsLiked ? post.likes + 1 : post.likes - 1;
+                const updatedLikes = updatedIsLiked
+                    ? post.likes + 1
+                    : post.likes - 1;
                 setIsLiked(updatedIsLiked);
                 setPost({ ...post, likes: updatedLikes });
-                localStorage.setItem(`post-${postId}-liked`, updatedIsLiked ? "true" : "false");
+                localStorage.setItem(
+                    `post-${postId}-liked`,
+                    updatedIsLiked ? "true" : "false"
+                );
             } else {
                 console.error("좋아요 요청 실패:", response.statusText);
             }
@@ -111,11 +126,15 @@ export default function CommunityPostDetailPage() {
         if (!newComment) return;
 
         try {
-            const response = await fetch(`/backend/community/${postId}/comments`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: newComment, userId }),
-            });
+            const response = await fetch(
+                `/backend/community/${postId}/comments`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: newComment, userId }),
+                    cache: "no-cache",
+                }
+            );
 
             if (response.ok) {
                 setNewComment("");
@@ -131,10 +150,14 @@ export default function CommunityPostDetailPage() {
 
     const handleCommentDelete = async (commentId: number) => {
         try {
-            const response = await fetch(`/backend/community/${postId}/comments/${commentId}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-            });
+            const response = await fetch(
+                `/backend/community/${postId}/comments/${commentId}`,
+                {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    cache: "no-cache",
+                }
+            );
 
             if (response.ok) {
                 loadComments(currentPage);
@@ -154,10 +177,14 @@ export default function CommunityPostDetailPage() {
     // 게시글 삭제
     const handleDeleteClick = async () => {
         try {
-            const response = await fetch(`/backend/community/${postId}?userId=${userId}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-            });
+            const response = await fetch(
+                `/backend/community/${postId}?userId=${userId}`,
+                {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    cache: "no-cache",
+                }
+            );
 
             if (response.ok) {
                 alert("게시글이 삭제되었습니다.");
@@ -190,7 +217,9 @@ export default function CommunityPostDetailPage() {
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                        <p className="text-lg font-semibold mb-4">존재하지 않는 게시글입니다.</p>
+                        <p className="text-lg font-semibold mb-4">
+                            존재하지 않는 게시글입니다.
+                        </p>
                         <button
                             onClick={() => {
                                 setShowModal(false);
@@ -205,12 +234,18 @@ export default function CommunityPostDetailPage() {
             )}
             {!showModal && post && (
                 <>
-                    <button onClick={() => router.push("/community/free")} className="text-gray-500 text-sm mb-4">
+                    <button
+                        onClick={() => router.push("/community/free")}
+                        className="text-gray-500 text-sm mb-4"
+                    >
                         ← 돌아가기
                     </button>
                     <h1 className="text-3xl font-bold mb-2">{post.title}</h1>
                     <div className="text-gray-600 mb-4">
-                        <span>작성자 ID: {post.userId}</span> | <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                        <span>작성자 ID: {post.userId}</span> |{" "}
+                        <span>
+                            {new Date(post.createdAt).toLocaleDateString()}
+                        </span>
                     </div>
                     <p className="text-lg mb-6">{post.content}</p>
 
@@ -228,7 +263,10 @@ export default function CommunityPostDetailPage() {
                     )}
 
                     <div className="flex space-x-4 items-center text-gray-500 mb-6">
-                        <span onClick={handleLikeClick} className="cursor-pointer">
+                        <span
+                            onClick={handleLikeClick}
+                            className="cursor-pointer"
+                        >
                             {isLiked ? "❤️" : "🤍"} {post.likes}
                         </span>
                         <span>👁️ {post.viewCount}</span>
@@ -237,38 +275,60 @@ export default function CommunityPostDetailPage() {
                     {/* 게시글 수정 및 삭제 버튼 */}
                     {post.userId === userId && (
                         <div className="flex space-x-4">
-                            <button onClick={handleEditClick} className="px-4 py-2 bg-blue-500 text-white rounded">
+                            <button
+                                onClick={handleEditClick}
+                                className="px-4 py-2 bg-blue-500 text-white rounded"
+                            >
                                 수정
                             </button>
-                            <button onClick={handleDeleteClick} className="px-4 py-2 bg-red-500 text-white rounded">
+                            <button
+                                onClick={handleDeleteClick}
+                                className="px-4 py-2 bg-red-500 text-white rounded"
+                            >
                                 삭제
                             </button>
                         </div>
                     )}
 
                     <div className="mt-8">
-                        <h2 className="text-2xl font-bold mb-4">댓글 {totalComments}개</h2>
+                        <h2 className="text-2xl font-bold mb-4">
+                            댓글 {totalComments}개
+                        </h2>
                         <textarea
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="댓글을 작성해주세요"
                             className="w-full p-2 border rounded mb-2"
                         />
-                        <button onClick={handleCommentSubmit} className="px-4 py-2 bg-black text-white rounded">
+                        <button
+                            onClick={handleCommentSubmit}
+                            className="px-4 py-2 bg-black text-white rounded"
+                        >
                             댓글 작성
                         </button>
 
                         <div className="mt-4 space-y-4">
                             {comments.length > 0 ? (
                                 comments.map((comment) => (
-                                    <div key={comment.id} className="flex justify-between items-start">
+                                    <div
+                                        key={comment.id}
+                                        className="flex justify-between items-start"
+                                    >
                                         <div>
                                             <span className="font-semibold">{`User ${comment.userId}`}</span>
-                                            <span className="text-sm text-gray-500 ml-2">{new Date(comment.createdAt).toLocaleString()}</span>
-                                            <p className="text-gray-700">{comment.content}</p>
+                                            <span className="text-sm text-gray-500 ml-2">
+                                                {new Date(
+                                                    comment.createdAt
+                                                ).toLocaleString()}
+                                            </span>
+                                            <p className="text-gray-700">
+                                                {comment.content}
+                                            </p>
                                         </div>
                                         <button
-                                            onClick={() => handleCommentDelete(comment.id)}
+                                            onClick={() =>
+                                                handleCommentDelete(comment.id)
+                                            }
                                             className="text-gray-500 hover:text-red-600"
                                         >
                                             ✖️
@@ -276,18 +336,28 @@ export default function CommunityPostDetailPage() {
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-gray-500">댓글이 없습니다.</p>
+                                <p className="text-gray-500">
+                                    댓글이 없습니다.
+                                </p>
                             )}
                         </div>
 
                         <div className="flex justify-center mt-4 space-x-4">
-                            <button onClick={handlePrevPage} disabled={currentPage === 1} className="px-4 py-2 bg-gray-200 rounded">
+                            <button
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                                className="px-4 py-2 bg-gray-200 rounded"
+                            >
                                 이전
                             </button>
                             <span>
                                 페이지 {currentPage} / {totalPages}
                             </span>
-                            <button onClick={handleNextPage} disabled={currentPage === totalPages} className="px-4 py-2 bg-gray-200 rounded">
+                            <button
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                                className="px-4 py-2 bg-gray-200 rounded"
+                            >
                                 다음
                             </button>
                         </div>
@@ -297,7 +367,3 @@ export default function CommunityPostDetailPage() {
         </div>
     );
 }
-
-
-
-
