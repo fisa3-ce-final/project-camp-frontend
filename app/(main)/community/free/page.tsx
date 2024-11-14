@@ -32,12 +32,20 @@ export default function CommunityTabsPage() {
     const [selectedTab, setSelectedTab] = useState("free");
     const [searchQuery, setSearchQuery] = useState("");
 
-    const fetchPosts = async (category: string, page: number, search: string) => {
+    const fetchPosts = async (
+        category: string,
+        page: number,
+        search: string
+    ) => {
         try {
-            const res = await fetch(`/backend/community/${category}?page=${page}&size=${size}&searchQuery=${search}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            });
+            const res = await fetch(
+                `/backend/community/${category}?page=${page}&size=${size}&searchQuery=${search}`,
+                {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    cache: "no-cache",
+                }
+            );
             const data = await res.json();
             setPosts(data.content || []);
             setPageInfo(data);
@@ -76,13 +84,34 @@ export default function CommunityTabsPage() {
             </div>
 
             <div className="flex space-x-4 border-b pb-2">
-                <button onClick={() => handleTabChange("free")} className={`flex-1 px-4 py-2 text-center ${selectedTab === "free" ? "font-bold border-b-2 border-black" : "bg-gray-200"}`}>
+                <button
+                    onClick={() => handleTabChange("free")}
+                    className={`flex-1 px-4 py-2 text-center ${
+                        selectedTab === "free"
+                            ? "font-bold border-b-2 border-black"
+                            : "bg-gray-200"
+                    }`}
+                >
                     자유
                 </button>
-                <button onClick={() => handleTabChange("review")} className={`flex-1 px-4 py-2 text-center ${selectedTab === "review" ? "font-bold border-b-2 border-black" : "bg-gray-200"}`}>
+                <button
+                    onClick={() => handleTabChange("review")}
+                    className={`flex-1 px-4 py-2 text-center ${
+                        selectedTab === "review"
+                            ? "font-bold border-b-2 border-black"
+                            : "bg-gray-200"
+                    }`}
+                >
                     후기
                 </button>
-                <button onClick={() => handleTabChange("coupon")} className={`flex-1 px-4 py-2 text-center ${selectedTab === "coupon" ? "font-bold border-b-2 border-black" : "bg-gray-200"}`}>
+                <button
+                    onClick={() => handleTabChange("coupon")}
+                    className={`flex-1 px-4 py-2 text-center ${
+                        selectedTab === "coupon"
+                            ? "font-bold border-b-2 border-black"
+                            : "bg-gray-200"
+                    }`}
+                >
                     쿠폰
                 </button>
             </div>
@@ -91,16 +120,21 @@ export default function CommunityTabsPage() {
             <ul className="space-y-4">
                 {posts && posts.length > 0 ? (
                     posts.map((post) => (
-                        <li 
-                            key={post.id} 
+                        <li
+                            key={post.id}
                             onClick={() => goToPostDetail(post.id)}
                             className="relative border-b pb-4 cursor-pointer hover:bg-gray-100"
                         >
                             <div>
-                                <h2 className="text-lg font-semibold">{post.title}</h2>
+                                <h2 className="text-lg font-semibold">
+                                    {post.title}
+                                </h2>
                                 <p className="text-gray-500">{post.content}</p>
                                 <p className="text-sm text-gray-400">
-                                    {post.userId} | {new Date(post.createdAt).toLocaleDateString()}
+                                    {post.userId} |{" "}
+                                    {new Date(
+                                        post.createdAt
+                                    ).toLocaleDateString()}
                                 </p>
                             </div>
                             <div className="absolute top-0 right-0 flex items-center space-x-2 text-gray-500">
@@ -114,19 +148,40 @@ export default function CommunityTabsPage() {
                 )}
             </ul>
 
-
             {/* 검색 및 작성 버튼 */}
             <div className="flex space-x-2 mt-4">
-                <input type="text" placeholder="검색어를 입력하세요" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="border rounded-md px-4 py-2 flex-grow" />
-                <button onClick={handleSearch} className="border rounded-md px-4 py-2">🔍</button>
-                <button onClick={goToCreatePost} className="border rounded-md px-4 py-2">✏️</button>
+                <input
+                    type="text"
+                    placeholder="검색어를 입력하세요"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="border rounded-md px-4 py-2 flex-grow"
+                />
+                <button
+                    onClick={handleSearch}
+                    className="border rounded-md px-4 py-2"
+                >
+                    🔍
+                </button>
+                <button
+                    onClick={goToCreatePost}
+                    className="border rounded-md px-4 py-2"
+                >
+                    ✏️
+                </button>
             </div>
 
             {/* 페이지네이션 */}
             <div className="flex justify-center space-x-2 mt-4">
                 {pageInfo &&
                     Array.from({ length: pageInfo.totalPages }, (_, i) => (
-                        <button key={i + 1} onClick={() => setPage(i + 1)} className={`px-3 py-1 border rounded-md ${page === i + 1 ? "bg-black text-white" : ""}`}>
+                        <button
+                            key={i + 1}
+                            onClick={() => setPage(i + 1)}
+                            className={`px-3 py-1 border rounded-md ${
+                                page === i + 1 ? "bg-black text-white" : ""
+                            }`}
+                        >
                             {i + 1}
                         </button>
                     ))}
@@ -134,9 +189,6 @@ export default function CommunityTabsPage() {
         </div>
     );
 }
-
-
-
 
 // "use client";
 
@@ -251,8 +303,8 @@ export default function CommunityTabsPage() {
 //             <ul className="space-y-4">
 //                 {posts && posts.length > 0 ? (
 //                     posts.map((post) => (
-//                         <li 
-//                             key={post.id} 
+//                         <li
+//                             key={post.id}
 //                             onClick={() => goToPostDetail(post.id)}
 //                             className="relative border-b pb-4 cursor-pointer hover:bg-gray-100"
 //                         >
