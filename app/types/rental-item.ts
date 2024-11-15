@@ -2,6 +2,24 @@
 
 import { Pageable } from "./pageable";
 
+export interface RentalItemDetail {
+    uuid: string;
+    username: string;
+    userImageUrl: string | null;
+    rentalItemId: number | null;
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    category: string;
+    status: string;
+    viewCount: number;
+    ratingAvg: number;
+    reviewNum: number;
+    createdAt: string;
+    image: string[];
+}
+
 // 대여 아이템 인터페이스
 export interface RentalItem {
     nickname: string | null;
