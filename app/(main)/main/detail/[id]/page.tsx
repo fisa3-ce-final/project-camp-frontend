@@ -3,7 +3,8 @@ import { FC } from "react";
 
 import { RentalItemDetailResponse } from "@/app/types/rental-item";
 import CampingItemDetail from "./detail-page";
-import { useParams } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth-options";
 
 interface DetailPageProps {
     params: {
@@ -13,12 +14,14 @@ interface DetailPageProps {
 
 const RentalItemDetailPage: FC<DetailPageProps> = async ({ params }) => {
     const { id } = params;
+    const session = await getServerSession(authOptions);
 
     // 서버에서 데이터 가져오기
     const response = await fetch(`http://localhost:8080/rental-items/${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.id_token}`,
         },
     });
 
