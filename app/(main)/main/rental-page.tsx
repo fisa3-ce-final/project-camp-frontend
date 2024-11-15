@@ -134,7 +134,7 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                                     item.userImageUrl ||
                                     "https://avatars.githubusercontent.com/u/124599?v=4"
                                 }
-                                username={item.username || "N/A"}
+                                nickname={item.nickname || "N/A"}
                                 name={item.rentalItemName}
                                 price={item.price}
                                 rating={item.ratingAvg} // 예시 고정 값
