@@ -1,14 +1,21 @@
+// types/rental-item.ts
+
 import { Pageable } from "./pageable";
 
+// 대여 아이템 인터페이스
 export interface RentalItem {
-    id: number;
-    name: string;
+    username: string | null;
+    userImageUrl: string;
+    rentalId: number;
+    rentalItemName: string;
     price: number;
     stock: number;
     category: string;
     status: string;
+    ratingAvg: number;
 }
 
+// 페이지네이션 정보 인터페이스
 export interface RentalPageData {
     content: RentalItem[];
     pageable: Pageable;
@@ -27,6 +34,7 @@ export interface RentalPageData {
     empty: boolean;
 }
 
+// 대여 아이템 상세 정보 응답 인터페이스
 export interface RentalItemDetailResponse {
     id: string;
     title: string;

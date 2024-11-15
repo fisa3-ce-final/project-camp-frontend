@@ -119,11 +119,19 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                 {/* Rental Items Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {rentalItems.map((item) => (
-                        <Link href={`/main/detail/${item.id}`} key={item.id}>
+                        <Link
+                            href={`/main/detail/${item.rentalId}`}
+                            key={"main_detail_" + item.rentalId}
+                        >
                             <RentalItemCard
-                                name={item.name}
+                                userImageUrl={
+                                    item.userImageUrl ||
+                                    "https://avatars.githubusercontent.com/u/124599?v=4"
+                                }
+                                username={item.username || "N/A"}
+                                name={item.rentalItemName}
                                 price={item.price}
-                                rating={4.8} // 예시 고정 값
+                                rating={item.ratingAvg} // 예시 고정 값
                                 category={categoryMapEngToKor[item.category]}
                             />
                         </Link>
