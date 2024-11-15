@@ -1,7 +1,6 @@
-// app/rental/rental-page.tsx
 "use client";
 
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import Link from "next/link";
 import { MainSidebar } from "@/app/components/main-sidebar";
 import { Button } from "@/components/ui/button";
@@ -13,15 +12,50 @@ export interface RentalPageProps {
 }
 
 const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
-    const { content: rentalItems, pageable } = rentalPageData;
+    const [rentalItems, setRentalItems] = useState(rentalPageData.content);
+    const [pageable, setPageable] = useState(rentalPageData.pageable);
+    const [totalPages, setTotalPages] = useState(rentalPageData.totalPages);
+    const [page, setPage] = useState(pageable.pageNumber + 1);
     const [searchQuery, setSearchQuery] = useState("");
+
+    // 현재 페이지 그룹의 시작 페이지 계산
+    const currentPageGroup = Math.floor((page - 1) / 10);
+    const startPage = currentPageGroup * 10 + 1;
+    const endPage = Math.min(startPage + 9, totalPages);
 
     const handleSearch = () => {
         console.log("검색어:", searchQuery);
+        fetchData(1); // 검색어 입력 후 첫 페이지로 이동
     };
 
     const handleCategorySelect = (category: string) => {
         console.log("Selected category:", category);
+        fetchData(1); // 카테고리 선택 시 첫 페이지로 이동
+    };
+
+    const fetchData = async (pageNumber: number) => {
+        try {
+            const response = await fetch(
+                `/backend/rental-items/category/all?page=${
+                    pageNumber - 1
+                }&size=10`,
+                {
+                    method: "GET",
+                    cache: "no-cache",
+                }
+            );
+            const data: RentalPageData = await response.json();
+            setRentalItems(data.content);
+            setPageable(data.pageable);
+            setTotalPages(data.totalPages);
+            setPage(pageNumber);
+        } catch (error) {
+            console.error("Failed to fetch rental items:", error);
+        }
+    };
+
+    const handlePageChange = (newPage: number) => {
+        fetchData(newPage);
     };
 
     return (
@@ -49,18 +83,46 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                             <RentalItemCard
                                 name={item.name}
                                 price={item.price}
-                                rating={4.8} // 예시 고정 값, 필요시 데이터에 맞게 변경
+                                rating={4.8} // 예시 고정 값
                                 category={item.category}
-                                reviewCount={27} // 예시 고정 값, 필요시 데이터에 맞게 변경
                             />
                         </Link>
                     ))}
                 </div>
-                <div className="mt-4">
-                    <p>
-                        현재 페이지: {pageable.pageNumber + 1} /{" "}
-                        {rentalPageData.totalPages}
-                    </p>
+                {/* 페이지네이션 버튼 */}
+                <div className="flex justify-center mt-4 space-x-2">
+                    {startPage > 1 && (
+                        <Button
+                            onClick={() => handlePageChange(startPage - 10)}
+                        >
+                            이전
+                        </Button>
+                    )}
+                    {Array.from(
+                        { length: endPage - startPage + 1 },
+                        (_, index) => (
+                            <Button
+                                key={index}
+                                onClick={() =>
+                                    handlePageChange(startPage + index)
+                                }
+                                variant={
+                                    page === startPage + index
+                                        ? "default"
+                                        : "outline"
+                                }
+                            >
+                                {startPage + index}
+                            </Button>
+                        )
+                    )}
+                    {endPage < totalPages && (
+                        <Button
+                            onClick={() => handlePageChange(startPage + 10)}
+                        >
+                            다음
+                        </Button>
+                    )}
                 </div>
             </main>
         </div>

@@ -41,7 +41,7 @@ const CampingItemDetail: FC<CampingItemDetailProps> = ({
         <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
             <Card className="overflow-hidden">
                 <img
-                    src={imageUrl || "https://picsum.photos/id/237/536/354"}
+                    src={imageUrl || "/community_post_placeholder.jpg"}
                     alt={title}
                     className="w-full h-72 object-cover"
                 />

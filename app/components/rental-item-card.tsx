@@ -3,12 +3,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react"; // Using Star icon from lucide-react
 
+// 카테고리 한글명과 영어 상태값 맵핑
+export const categoryMap: { [key: string]: string } = {
+    TENT: "텐트",
+    STORAGE: "배낭 및 수납 용품",
+    COOKING: "취사 도구",
+    BEDDING: "침낭 관련 용품",
+    CAMPING_FURNITURE: "캠핑 가구",
+    LIGHTING: "조명 관련 용품",
+};
+
 interface RentalItemCardProps {
     name: string;
     price: number;
     rating: number;
     category: string;
-    reviewCount: number;
+    // reviewCount: number;
 }
 
 export function RentalItemCard({
@@ -16,7 +26,6 @@ export function RentalItemCard({
     price,
     rating,
     category,
-    reviewCount,
 }: RentalItemCardProps) {
     // Helper to format price as "15,000원/일"
     const formatPrice = (price: number) => `${price.toLocaleString()}원/일`;
@@ -72,15 +81,18 @@ export function RentalItemCard({
                     <h1 className="font-bold text-lg md:text-2xl text-gray-50 relative z-10">
                         {name}
                     </h1>
-                    <p className="text-gray-300 text-sm mb-2">{category}</p>
+                    {/* 카테고리 영어 값을 한글로 변환하여 표시 */}
+                    <p className="text-gray-300 text-sm mb-2">
+                        {categoryMap[category] || category}
+                    </p>
                     <p className="font-bold text-xl text-gray-50 relative z-10 mb-4">
                         {formatPrice(price)}
                     </p>
                     <div className="flex items-center space-x-1 relative z-10">
                         {renderStars(rating)}
-                        <span className="text-sm text-gray-400 ml-2">
+                        {/* <span className="text-sm text-gray-400 ml-2">
                             ({reviewCount})
-                        </span>
+                        </span> */}
                     </div>
                 </div>
             </div>
