@@ -6,7 +6,7 @@ interface MainPageProps {}
 
 const MainPage: FC<MainPageProps> = async ({}) => {
     const response = await fetch(
-        "http://localhost:8080/rental-items/category/all?page=0&size=10",
+        process.env.BACKEND_URL + "/rental-items/category/all?page=0&size=10",
         {
             method: "GET",
             cache: "no-cache",
