@@ -68,7 +68,7 @@ export default function CampingItemForm() {
         formData.append("description", values.description);
         formData.append("price", values.price.toString());
         formData.append("stock", values.stock.toString());
-        formData.append("category", categoryMap[selectedCategory]); // 영어 상태값으로 변환
+        formData.append("category", categoryMap[selectedCategory]);
         values.images.forEach((file) => formData.append("images", file));
 
         const response = await fetch(
