@@ -2,24 +2,32 @@
 import Link from "next/link";
 import { Home, MessageSquare, Bell, User, ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import Signout from "./signout";
 
 export function GlobalNav() {
     return (
         <nav className="bg-gray-100 border-t border-gray-200 md:border-t-0 md:border-b p-4 flex justify-between items-center md:justify-center relative">
             {/* Company Logo - only visible on desktop */}
             <div className="hidden md:block absolute left-4">
-                <Link href="/">
+                <Link href="/" className="flex">
                     <Image
-                        src="/logo.png"
+                        src="/logo-img.png"
                         alt="Company Logo"
                         width={40}
                         height={40}
+                    />
+                    <Image
+                        src="/logo-text.png"
+                        alt="Company Logo Text"
+                        width={120}
+                        height={40}
+                        className="ml-2"
                     />
                 </Link>
             </div>
 
             {/* Centered Navigation Links */}
-            <div className="flex justify-around ml-auto md:w-auto space-x-8">
+            <div className="flex justify-around w-full  md:ml-auto md:w-auto space-x-8">
                 <Link
                     href="/main"
                     className="flex flex-col items-center md:flex-row md:space-x-2"
@@ -28,7 +36,7 @@ export function GlobalNav() {
                     <span>제품</span>
                 </Link>
                 <Link
-                    href="/community"
+                    href="/community/free"
                     className="flex flex-col items-center md:flex-row md:space-x-2"
                 >
                     <MessageSquare className="w-6 h-6" />

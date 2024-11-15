@@ -1,4 +1,5 @@
 import { GlobalNav } from "@/app/components/global-nav";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function MainLayout({
     children,
@@ -12,10 +13,11 @@ export default function MainLayout({
                 <GlobalNav />
             </header>
             {/* Main Content */}
-            <main className="flex-1">{children}</main>
+
+            <main className="flex-1 pb-20 md:p-0">{children}</main>
 
             {/* Global Navigation for Mobile */}
-            <footer className="md:hidden fixed bottom-0 w-full">
+            <footer className="md:hidden fixed bottom-0 w-full z-10">
                 <GlobalNav />
             </footer>
         </section>
