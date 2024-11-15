@@ -2,16 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react"; // Using Star icon from lucide-react
-
-// 카테고리 한글명과 영어 상태값 맵핑
-export const categoryMap: { [key: string]: string } = {
-    TENT: "텐트",
-    STORAGE: "배낭 및 수납 용품",
-    COOKING: "취사 도구",
-    BEDDING: "침낭 관련 용품",
-    CAMPING_FURNITURE: "캠핑 가구",
-    LIGHTING: "조명 관련 용품",
-};
+import { categoryMap, categoryMapEngToKor } from "@/app/types/category-map";
 
 interface RentalItemCardProps {
     name: string;
@@ -83,7 +74,7 @@ export function RentalItemCard({
                     </h1>
                     {/* 카테고리 영어 값을 한글로 변환하여 표시 */}
                     <p className="text-gray-300 text-sm mb-2">
-                        {categoryMap[category] || category}
+                        {categoryMapEngToKor[category] || category}
                     </p>
                     <p className="font-bold text-xl text-gray-50 relative z-10 mb-4">
                         {formatPrice(price)}
