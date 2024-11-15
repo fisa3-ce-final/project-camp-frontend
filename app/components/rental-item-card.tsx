@@ -8,7 +8,7 @@ interface RentalItemCardProps {
     price: number;
     rating: number;
     category: string;
-    reviewCount: number;
+    // reviewCount: number;
 }
 
 export function RentalItemCard({
@@ -16,8 +16,8 @@ export function RentalItemCard({
     price,
     rating,
     category,
-    reviewCount,
-}: RentalItemCardProps) {
+}: // reviewCount,
+RentalItemCardProps) {
     // Helper to format price as "15,000원/일"
     const formatPrice = (price: number) => `${price.toLocaleString()}원/일`;
 
@@ -78,9 +78,9 @@ export function RentalItemCard({
                     </p>
                     <div className="flex items-center space-x-1 relative z-10">
                         {renderStars(rating)}
-                        <span className="text-sm text-gray-400 ml-2">
+                        {/* <span className="text-sm text-gray-400 ml-2">
                             ({reviewCount})
-                        </span>
+                        </span> */}
                     </div>
                 </div>
             </div>

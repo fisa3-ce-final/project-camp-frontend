@@ -51,7 +51,7 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                                 price={item.price}
                                 rating={4.8} // 예시 고정 값, 필요시 데이터에 맞게 변경
                                 category={item.category}
-                                reviewCount={27} // 예시 고정 값, 필요시 데이터에 맞게 변경
+                                // reviewCount={27} // 예시 고정 값, 필요시 데이터에 맞게 변경
                             />
                         </Link>
                     ))}
