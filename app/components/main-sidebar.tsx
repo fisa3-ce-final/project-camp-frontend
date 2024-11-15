@@ -98,7 +98,7 @@ export function MainSidebar({
                         onClick={() => handleCategoryClick("취사 도구")}
                     >
                         <Utensils className="w-5 h-5" />
-                        <span>취사도구</span>
+                        <span>취사 도구</span>
                     </li>
                     <li
                         className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${

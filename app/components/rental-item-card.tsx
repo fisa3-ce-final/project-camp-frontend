@@ -5,14 +5,17 @@ import { Star } from "lucide-react"; // Using Star icon from lucide-react
 import { categoryMap, categoryMapEngToKor } from "@/app/types/category-map";
 
 interface RentalItemCardProps {
+    username: string;
+    userImageUrl: string;
     name: string;
     price: number;
     rating: number;
     category: string;
-    // reviewCount: number;
 }
 
 export function RentalItemCard({
+    username,
+    userImageUrl,
     name,
     price,
     rating,
@@ -54,9 +57,7 @@ export function RentalItemCard({
                 <div className="flex flex-row items-center space-x-4 z-10">
                     <Avatar className="h-10 w-10 rounded-full border-2 shrink-0">
                         <AvatarImage
-                            src={
-                                "https://avatars.githubusercontent.com/u/124599?v=4"
-                            }
+                            src={userImageUrl}
                             alt="아바타"
                             className=" h-10 w-10 object-cover rounded-full"
                         />
@@ -64,7 +65,7 @@ export function RentalItemCard({
                     </Avatar>
                     <div className="flex flex-col">
                         <p className="font-semibold text-lg text-gray-50 relative z-10">
-                            닉네임_1234
+                            {username}
                         </p>
                     </div>
                 </div>
