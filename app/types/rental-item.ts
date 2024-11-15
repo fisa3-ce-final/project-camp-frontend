@@ -4,7 +4,7 @@ import { Pageable } from "./pageable";
 
 // 대여 아이템 인터페이스
 export interface RentalItem {
-    username: string | null;
+    nickname: string | null;
     userImageUrl: string;
     rentalId: number;
     rentalItemName: string;

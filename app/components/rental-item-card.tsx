@@ -5,7 +5,7 @@ import { Star } from "lucide-react"; // Using Star icon from lucide-react
 import { categoryMap, categoryMapEngToKor } from "@/app/types/category-map";
 
 interface RentalItemCardProps {
-    username: string;
+    nickname: string;
     userImageUrl: string;
     name: string;
     price: number;
@@ -14,7 +14,7 @@ interface RentalItemCardProps {
 }
 
 export function RentalItemCard({
-    username,
+    nickname,
     userImageUrl,
     name,
     price,
@@ -65,7 +65,7 @@ export function RentalItemCard({
                     </Avatar>
                     <div className="flex flex-col">
                         <p className="font-semibold text-lg text-gray-50 relative z-10">
-                            {username}
+                            {nickname}
                         </p>
                     </div>
                 </div>

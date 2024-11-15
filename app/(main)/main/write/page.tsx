@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { categoryMap } from "@/app/types/category-map";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
     name: z.string().nonempty("물품 이름을 입력해주세요."),
@@ -43,6 +44,7 @@ export default function CampingItemForm() {
     const [files, setFiles] = useState<File[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const router = useRouter();
+    const session = useSession();
 
     const dropZoneConfig = {
         maxFiles: 5,
@@ -77,6 +79,7 @@ export default function CampingItemForm() {
                 method: "POST",
                 headers: {
                     "Cache-Control": "no-cache",
+                    Authorization: `Bearer ${session.data?.user.id_token}`,
                 },
                 body: formData,
             }

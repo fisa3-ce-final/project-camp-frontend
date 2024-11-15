@@ -8,6 +8,8 @@ import { RentalItemCard } from "@/app/components/rental-item-card";
 import { categoryMap, categoryMapEngToKor } from "@/app/types/category-map";
 import { RentalPageData } from "@/app/types/rental-item";
 import { Menu } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { headers } from "next/headers";
 
 export interface RentalPageProps {
     rentalPageData: RentalPageData;
@@ -21,6 +23,7 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [category, setCategory] = useState("ALL");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { data: session } = useSession();
 
     // 현재 페이지 그룹의 시작 페이지 계산
     const currentPageGroup = Math.floor((page - 1) / 10);
@@ -50,6 +53,9 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                 {
                     method: "GET",
                     cache: "no-cache",
+                    headers: {
+                        Authorization: `Bearer ${session?.user.id_token}`,
+                    },
                 }
             );
             const data: RentalPageData = await response.json();
@@ -128,7 +134,7 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                                     item.userImageUrl ||
                                     "https://avatars.githubusercontent.com/u/124599?v=4"
                                 }
-                                username={item.username || "N/A"}
+                                nickname={item.nickname || "N/A"}
                                 name={item.rentalItemName}
                                 price={item.price}
                                 rating={item.ratingAvg} // 예시 고정 값
