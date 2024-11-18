@@ -33,6 +33,10 @@ import {
     ChevronUp,
 } from "lucide-react";
 import Link from "next/link";
+import { UserGetResponse } from "../types/user-get-response";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../lib/auth-options";
+import { redirect } from "next/navigation";
 
 const items = [
     {
@@ -71,11 +75,40 @@ const dropdownItems = [
     },
 ];
 
-export default function AdminLayout({
+// async function getUserData(): Promise<UserGetResponse | null> {
+//     const data = await getServerSession(authOptions);
+
+//     const res = await fetch(process.env.BACKEND_URL + "/user", {
+//         method: "GET",
+//         headers: {
+//             "Content-Type": "application/json",
+//             Authorization: `Bearer ${data?.user.id_token}`,
+//         },
+//         cache: "no-cache",
+//     });
+
+//     if (!res.ok) {
+//         console.error("데이터 패칭 오류:", res.statusText);
+//         redirect("/logout");
+//     }
+//     let result: UserGetResponse | null = null;
+
+//     try {
+//         result = await res.json();
+//     } catch (error) {
+//         result = null;
+//     }
+
+//     return result;
+// }
+
+export default async function AdminLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await getServerSession(authOptions);
+
     return (
         <section>
             <SidebarProvider>
@@ -106,7 +139,7 @@ export default function AdminLayout({
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <SidebarMenuButton>
-                                            <User2 /> Username
+                                            <User2 /> {session?.user.email}
                                             <ChevronUp className="ml-auto" />
                                         </SidebarMenuButton>
                                     </DropdownMenuTrigger>
@@ -114,16 +147,16 @@ export default function AdminLayout({
                                         side="top"
                                         className="w-[--radix-popper-anchor-width]"
                                     >
-                                        <DropdownMenuItem>
-                                            <Link href="/main">
-                                                <Button>홈으로</Button>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <Link href="/logout">
-                                                <Button>로그아웃</Button>
-                                            </Link>
-                                        </DropdownMenuItem>
+                                        <Link href="/main">
+                                            <DropdownMenuItem>
+                                                <span>홈으로 </span>
+                                            </DropdownMenuItem>
+                                        </Link>
+                                        <Link href="/logout">
+                                            <DropdownMenuItem>
+                                                <span>로그아웃</span>
+                                            </DropdownMenuItem>
+                                        </Link>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </SidebarMenuItem>
