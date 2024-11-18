@@ -163,7 +163,7 @@ export default async function AdminLayout({
                         </SidebarMenu>
                     </SidebarFooter>
                 </Sidebar>
-                <main>
+                <main className="w-full">
                     <SidebarTrigger />
                     {children}
                 </main>
