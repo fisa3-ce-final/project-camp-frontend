@@ -35,7 +35,7 @@ export function GlobalNav() {
                     <Home className="w-6 h-6" />
                     <span>제품</span>
                 </Link>
-                <Link
+                {/* <Link
                     href="/community/free"
                     className="flex flex-col items-center md:flex-row md:space-x-2"
                 >
@@ -48,7 +48,7 @@ export function GlobalNav() {
                 >
                     <Bell className="w-6 h-6" />
                     <span>알림</span>
-                </Link>
+                </Link> */}
                 <Link
                     href="/cart"
                     className="flex flex-col items-center md:flex-row md:space-x-2"
