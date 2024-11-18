@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Carousel } from "@/components/ui/carousel";
 import { RentalItemDetail } from "@/app/types/rental-item";
+import { categoryMapEngToKor } from "@/app/types/category-map";
 
 interface ItemDetailProps {
     itemDetail: RentalItemDetail;
@@ -33,15 +34,15 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
                 <div className="flex flex-col gap-6 p-6">
                     {/* 이미지 Carousel 섹션 */}
                     <div className="w-full">
-                        {image.length > 0 ? (
+                        {image?.length > 0 ? (
                             <Carousel>
-                                {image.map((imgUrl, index) => (
+                                {image.map((imgInfo, index) => (
                                     <div
                                         key={index}
                                         className="w-full h-64 md:h-80"
                                     >
                                         <img
-                                            src={imgUrl}
+                                            src={imgInfo.imageUrl}
                                             alt={`${name} - ${index + 1}`}
                                             className="w-full h-full object-cover rounded-md"
                                         />
@@ -57,12 +58,17 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
 
                     {/* 상세 정보 섹션 */}
                     <div className="flex flex-col">
-                        <h1 className="text-2xl font-bold mb-2">{name}</h1>
-                        <p className="text-gray-600 mb-4">{description}</p>
-
                         <div className="flex flex-wrap gap-2 mb-4">
-                            <Badge variant="secondary">{category}</Badge>
+                            <Badge variant="secondary">
+                                {categoryMapEngToKor[category]}
+                            </Badge>
                         </div>
+
+                        <h1 className="text-2xl font-bold mb-2">{name}</h1>
+
+                        <p className="text-sm text-gray-500">
+                            등록일: {new Date(createdAt).toLocaleDateString()}
+                        </p>
 
                         <div className="mb-4">
                             <p className="text-lg font-semibold mb-1">
@@ -74,11 +80,9 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
                             <p>
                                 평점: {ratingAvg}점 ({reviewNum} 리뷰)
                             </p>
-                            <p className="text-sm text-gray-500">
-                                등록일:{" "}
-                                {new Date(createdAt).toLocaleDateString()}
-                            </p>
                         </div>
+
+                        <p className="mb-4">{description}</p>
 
                         <div className="mt-4">
                             <Button variant="default" className="w-full">

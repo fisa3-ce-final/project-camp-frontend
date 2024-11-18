@@ -2,6 +2,11 @@
 
 import { Pageable } from "./pageable";
 
+export interface RentalItemImage {
+    imageUrl: string;
+    imageOrder: number;
+}
+
 export interface RentalItemDetail {
     uuid: string;
     username: string;
@@ -17,7 +22,7 @@ export interface RentalItemDetail {
     ratingAvg: number;
     reviewNum: number;
     createdAt: string;
-    image: string[];
+    image: RentalItemImage[];
 }
 
 // 대여 아이템 인터페이스
