@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 interface MyPageProps {
     userData: UserGetResponse | null;
@@ -346,6 +347,15 @@ export function MyPage({ userData }: MyPageProps) {
                         더보기
                     </Button>
                 </section>
+
+                {/* 관리자 버튼 */}
+                {userData.role === "ADMIN" && (
+                    <section className="flex justify-center mt-8 border-t pt-4">
+                        <Link href="/admin">
+                            <Button>관리자 대시보드</Button>
+                        </Link>
+                    </section>
+                )}
 
                 {/* 로그아웃 버튼 */}
                 <section className="flex justify-center mt-8 border-t pt-4">
