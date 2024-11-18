@@ -131,9 +131,9 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                         >
                             <RentalItemCard
                                 userImageUrl={
-                                    item.userImageUrl ||
-                                    "https://avatars.githubusercontent.com/u/124599?v=4"
+                                    item.userImageUrl || "/료이키텐카이.png"
                                 }
+                                thumbnail={item.thumbnail}
                                 nickname={item.nickname || "N/A"}
                                 name={item.rentalItemName}
                                 price={item.price}

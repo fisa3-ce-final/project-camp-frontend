@@ -9,4 +9,5 @@ export interface UserGetResponse {
     imageUrl: string;
     provider: string;
     createdAt: string; // LocalDateTime을 문자열로 변환
+    role: string;
 }

@@ -26,7 +26,6 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
     );
 
     const data: RentalItemDetail = await response.json();
-    console.log(data);
 
     return (
         <div>
