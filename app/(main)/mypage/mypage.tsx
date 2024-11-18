@@ -199,7 +199,7 @@ export function MyPage({ userData }: MyPageProps) {
                             />
                             <AvatarFallback className="w-32 h-32 flex items-center justify-center text-2xl font-bold text-white bg-gray-400 rounded-full">
                                 <Image
-                                    src="/료이키텐카이.png"
+                                    src="/logo-img.png"
                                     alt="아바타"
                                     width={128}
                                     height={128}
