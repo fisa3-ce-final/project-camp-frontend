@@ -10,6 +10,7 @@ import {
     YAxis,
     ResponsiveContainer,
 } from "recharts";
+import { Package, Clock, ShoppingCart, AlertCircle } from "lucide-react";
 
 interface DashboardData {
     totalItems: number;
@@ -25,7 +26,10 @@ export default function Dashboard({ data }: { data: DashboardData }) {
             {/* Statistics Cards */}
             <Card>
                 <CardHeader>
-                    <CardTitle>전체 등록 물품 수</CardTitle>
+                    <CardTitle>
+                        <Package className="inline-block mr-2" />
+                        전체 등록 물품 수
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p>{data.totalItems}</p>
@@ -33,7 +37,10 @@ export default function Dashboard({ data }: { data: DashboardData }) {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>심사 대기 수</CardTitle>
+                    <CardTitle>
+                        <Clock className="inline-block mr-2" />
+                        심사 대기 수
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p>{data.pendingReviews}</p>
@@ -41,7 +48,10 @@ export default function Dashboard({ data }: { data: DashboardData }) {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>물품 대여 신청 수</CardTitle>
+                    <CardTitle>
+                        <ShoppingCart className="inline-block mr-2" />
+                        물품 대여 신청 수
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p>{data.rentalRequests}</p>
@@ -49,7 +59,10 @@ export default function Dashboard({ data }: { data: DashboardData }) {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>물품 연체 수</CardTitle>
+                    <CardTitle>
+                        <AlertCircle className="inline-block mr-2" />
+                        물품 연체 수
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p>{data.overdueItems}</p>
