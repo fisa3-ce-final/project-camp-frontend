@@ -131,7 +131,7 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                         >
                             <RentalItemCard
                                 userImageUrl={
-                                    item.userImageUrl || "/료이키텐카이.png"
+                                    item.userImageUrl || "/logo-img.png"
                                 }
                                 rentalImageUrl={
                                     item.rentalImageUrl === "이미지 없음"

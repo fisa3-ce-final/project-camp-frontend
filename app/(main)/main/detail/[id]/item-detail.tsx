@@ -51,6 +51,7 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
                                                     <img
                                                         src={imgInfo.imageUrl}
                                                         alt="상품 이미지"
+                                                        className="select-none"
                                                     ></img>
                                                 </CardContent>
                                             </Card>
