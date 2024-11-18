@@ -4,8 +4,16 @@
 import { FC } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Carousel } from "@/components/ui/carousel";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel";
 import { RentalItemDetail } from "@/app/types/rental-item";
+import { categoryMapEngToKor } from "@/app/types/category-map";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface ItemDetailProps {
     itemDetail: RentalItemDetail;
@@ -32,21 +40,26 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
             <div className="w-full max-w-4xl bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
                 <div className="flex flex-col gap-6 p-6">
                     {/* 이미지 Carousel 섹션 */}
-                    <div className="w-full">
-                        {image.length > 0 ? (
-                            <Carousel>
-                                {image.map((imgUrl, index) => (
-                                    <div
-                                        key={index}
-                                        className="w-full h-64 md:h-80"
-                                    >
-                                        <img
-                                            src={imgUrl}
-                                            alt={`${name} - ${index + 1}`}
-                                            className="w-full h-full object-cover rounded-md"
-                                        />
-                                    </div>
-                                ))}
+                    <div className="w-full flex justify-center">
+                        {image?.length > 0 ? (
+                            <Carousel className="w-full max-w-md">
+                                <CarouselContent>
+                                    {image.map((imgInfo, index) => (
+                                        <CarouselItem key={"img_" + index}>
+                                            <Card>
+                                                <CardContent className="flex aspect-square items-center justify-center p-0">
+                                                    <img
+                                                        src={imgInfo.imageUrl}
+                                                        alt="상품 이미지"
+                                                    ></img>
+                                                </CardContent>
+                                            </Card>
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+
+                                <CarouselPrevious />
+                                <CarouselNext />
                             </Carousel>
                         ) : (
                             <div className="w-full h-64 md:h-80 bg-gray-200 flex items-center justify-center rounded-md">
@@ -57,12 +70,17 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
 
                     {/* 상세 정보 섹션 */}
                     <div className="flex flex-col">
-                        <h1 className="text-2xl font-bold mb-2">{name}</h1>
-                        <p className="text-gray-600 mb-4">{description}</p>
-
                         <div className="flex flex-wrap gap-2 mb-4">
-                            <Badge variant="secondary">{category}</Badge>
+                            <Badge variant="secondary">
+                                {categoryMapEngToKor[category]}
+                            </Badge>
                         </div>
+
+                        <h1 className="text-2xl font-bold mb-2">{name}</h1>
+
+                        <p className="text-sm text-gray-500">
+                            등록일: {new Date(createdAt).toLocaleDateString()}
+                        </p>
 
                         <div className="mb-4">
                             <p className="text-lg font-semibold mb-1">
@@ -74,11 +92,9 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
                             <p>
                                 평점: {ratingAvg}점 ({reviewNum} 리뷰)
                             </p>
-                            <p className="text-sm text-gray-500">
-                                등록일:{" "}
-                                {new Date(createdAt).toLocaleDateString()}
-                            </p>
                         </div>
+
+                        <p className="mb-4">{description}</p>
 
                         <div className="mt-4">
                             <Button variant="default" className="w-full">
