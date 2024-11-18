@@ -1,4 +1,5 @@
 import { GlobalNav } from "@/app/components/global-nav";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -114,13 +115,14 @@ export default function AdminLayout({
                                         className="w-[--radix-popper-anchor-width]"
                                     >
                                         <DropdownMenuItem>
-                                            <span>Account</span>
+                                            <Link href="/main">
+                                                <Button>홈으로</Button>
+                                            </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
-                                            <span>Billing</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <span>Sign out</span>
+                                            <Link href="/logout">
+                                                <Button>로그아웃</Button>
+                                            </Link>
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

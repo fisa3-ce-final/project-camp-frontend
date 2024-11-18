@@ -133,7 +133,11 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                                 userImageUrl={
                                     item.userImageUrl || "/료이키텐카이.png"
                                 }
-                                thumbnail={item.thumbnail}
+                                rentalImageUrl={
+                                    item.rentalImageUrl === "이미지 없음"
+                                        ? "https://images.unsplash.com/photo-1544077960-604201fe74bc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1651&q=80"
+                                        : item.rentalImageUrl
+                                }
                                 nickname={item.nickname || "N/A"}
                                 name={item.rentalItemName}
                                 price={item.price}
