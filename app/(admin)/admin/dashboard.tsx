@@ -82,7 +82,7 @@ export default function Dashboard({ data }: { data: DashboardData }) {
                                     }}
                                 />
                                 <Tooltip />
-                                <Bar dataKey="count" fill="#8884d8" />
+                                <Bar dataKey="count" fill="#4682B4" />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
