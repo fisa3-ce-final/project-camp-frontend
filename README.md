@@ -2,6 +2,9 @@
 
 <p align="center">
   <strong>캠핑 장비 대여 서비스를 제공하는 웹 애플리케이션</strong>
+
+<p align="center">
+  <img src="github_images/image.png" alt="Project Rental Logo">
 </p>
 
 <h2>📋 소개</h2>
