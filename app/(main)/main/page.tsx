@@ -20,7 +20,7 @@ const MainPage: FC<MainPageProps> = async ({}) => {
     );
 
     const data: RentalPageData = await response.json();
-    console.log("RentalPageData ", data);
+
     return (
         <>
             <RentalPage rentalPageData={data} />

@@ -31,12 +31,12 @@ export interface RentalItem {
     userImageUrl: string;
     rentalId: number;
     rentalItemName: string;
+    rentalImageUrl: string;
     price: number;
     stock: number;
     category: string;
     status: string;
     ratingAvg: number;
-    thumbnail: string;
 }
 
 // 페이지네이션 정보 인터페이스
