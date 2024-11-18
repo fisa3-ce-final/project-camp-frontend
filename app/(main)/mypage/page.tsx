@@ -23,17 +23,25 @@ async function getUserData(): Promise<UserGetResponse | null> {
         console.error("데이터 패칭 오류:", res.statusText);
         redirect("/logout");
     }
+    let result: UserGetResponse | null = null;
 
-    return res.json();
+    try {
+        result = await res.json();
+    } catch (error) {
+        result = null;
+    }
+
+    return result;
 }
 
 interface PageProps {}
 
 const Page: FC<PageProps> = async ({}) => {
-    // 서버사이드에서 사용자 데이터를 받아옴
     const userData = await getUserData();
+    if (userData === null) {
+        redirect("/logout");
+    }
 
-    // console.log("userData", userData);
     return (
         <>
             <MyPage userData={userData} />
