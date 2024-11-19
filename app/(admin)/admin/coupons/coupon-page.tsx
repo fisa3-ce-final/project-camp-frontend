@@ -71,6 +71,28 @@ const CouponPage: FC<CouponPageProps> = ({ couponData, idToken }) => {
         fetchCoupons(page);
     };
 
+    const handleDeleteCoupon = async (couponId: number) => {
+        try {
+            const response = await fetch(`/backend/admin/coupon/${couponId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                },
+                cache: "no-cache",
+            });
+
+            if (response.ok) {
+                fetchCoupons(currentPage); // 목록 갱신
+            } else {
+                alert("쿠폰 삭제 실패. 다시 시도해주세요.");
+            }
+        } catch (error) {
+            console.error("쿠폰 삭제 중 오류 발생:", error);
+            alert("오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    };
+
     const handleCreateCoupon = async () => {
         try {
             const response = await fetch("/backend/admin/coupon", {
@@ -275,7 +297,14 @@ const CouponPage: FC<CouponPageProps> = ({ couponData, idToken }) => {
                                     ).toLocaleDateString()}
                                 </TableCell>
                                 <TableCell>
-                                    <Button variant="destructive">삭제</Button>
+                                    <Button
+                                        variant="destructive"
+                                        onClick={() =>
+                                            handleDeleteCoupon(coupon.couponId)
+                                        }
+                                    >
+                                        삭제
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
