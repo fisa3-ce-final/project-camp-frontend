@@ -28,7 +28,7 @@ async function refreshAccessToken(token: JWT) {
                     grant_type: "refresh_token",
                     refresh_token: token.refresh_token,
                 }),
-                cache: "no-cache",
+                cache: "no-store",
             }
         );
 
@@ -122,7 +122,7 @@ export const authOptions: AuthOptions = {
                         body: JSON.stringify({
                             provider: account.provider,
                         }),
-                        cache: "no-cache",
+                        cache: "no-store",
                     });
                     res.text().then(console.log);
                 } catch (e) {

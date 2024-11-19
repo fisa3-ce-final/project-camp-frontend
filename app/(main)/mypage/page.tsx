@@ -16,7 +16,7 @@ async function getUserData(): Promise<UserGetResponse | null> {
             "Content-Type": "application/json",
             Authorization: `Bearer ${data?.user.id_token}`,
         },
-        cache: "no-cache",
+        cache: "no-store",
     });
 
     if (!res.ok) {

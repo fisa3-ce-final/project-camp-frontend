@@ -49,7 +49,7 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
                     Authorization: `Bearer ${idToken}`,
                 },
                 body: JSON.stringify({ rentalItemId: id }),
-                cache: "no-cache",
+                cache: "no-store",
             });
 
             if (response.ok) {
