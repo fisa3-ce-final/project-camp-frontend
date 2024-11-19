@@ -68,18 +68,15 @@ export function MyPage({ userData }: MyPageProps) {
                 formData.append("imageFile", avatarFile); // 이미지 파일 추가
             }
 
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_HOST}/backend/user`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${session?.user.id_token}`,
-                        // 'Content-Type'을 설정하지 마세요. FormData는 자동으로 설정됩니다.
-                    },
-                    body: formData,
-                    cache: "no-cache",
-                }
-            );
+            const response = await fetch(`/backend/user`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${session?.user.id_token}`,
+                    // 'Content-Type'을 설정하지 마세요. FormData는 자동으로 설정됩니다.
+                },
+                body: formData,
+                cache: "no-cache",
+            });
             if (response.ok) {
                 // 변경사항을 최종 저장
                 setNickname(tempNickname);
@@ -128,16 +125,13 @@ export function MyPage({ userData }: MyPageProps) {
 
         setIsDeleting(true);
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_HOST}/backend/user`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${session?.user.id_token}`,
-                    },
-                    cache: "no-cache",
-                }
-            );
+            const response = await fetch(`/backend/user`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${session?.user.id_token}`,
+                },
+                cache: "no-cache",
+            });
 
             if (response.ok) {
                 alert("계정이 성공적으로 삭제되었습니다.");

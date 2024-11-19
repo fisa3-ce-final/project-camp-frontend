@@ -73,17 +73,14 @@ export default function CampingItemForm() {
         formData.append("category", categoryMap[selectedCategory]);
         values.images.forEach((file) => formData.append("images", file));
 
-        const response = await fetch(
-            "http://localhost:3000/backend/rental-items",
-            {
-                method: "POST",
-                headers: {
-                    "Cache-Control": "no-cache",
-                    Authorization: `Bearer ${session.data?.user.id_token}`,
-                },
-                body: formData,
-            }
-        );
+        const response = await fetch("/backend/rental-items", {
+            method: "POST",
+            headers: {
+                "Cache-Control": "no-cache",
+                Authorization: `Bearer ${session.data?.user.id_token}`,
+            },
+            body: formData,
+        });
 
         if (!response.ok) {
             throw new Error("서버 요청에 실패했습니다.");
