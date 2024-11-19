@@ -11,7 +11,7 @@ export interface RentalItem {
     name: string;
     category: string;
     price: number;
-    status: "APPROVED" | "PENDING" | "REJECTED"; // Enum-like type for status
+    status: "APPROVED" | "PENDING" | "REJECTED" | "AVAILABLE"; // Enum-like type for status
     createdAt: string; // ISO 8601 Date String
 }
 // API Response Interface
