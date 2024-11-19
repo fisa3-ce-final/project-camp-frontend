@@ -13,14 +13,17 @@ interface DashboardData {
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
 
-    const res = await fetch("http://localhost:8080/admin/dashboard/status", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.id_token}`,
-        },
-        cache: "no-cache",
-    });
+    const res = await fetch(
+        process.env.BACKEND_URL + "/admin/dashboard/status",
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session?.user.id_token}`,
+            },
+            cache: "no-cache",
+        }
+    );
 
     if (!res.ok) {
         throw new Error("Failed to fetch dashboard data");
