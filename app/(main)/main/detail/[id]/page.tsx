@@ -29,7 +29,7 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
 
     return (
         <div>
-            <ItemDetail itemDetail={data} />
+            <ItemDetail itemDetail={data} idToken={session?.user.id_token!} />
         </div>
     );
 };
