@@ -12,7 +12,7 @@ const MainPage: FC<MainPageProps> = async ({}) => {
         process.env.BACKEND_URL + "/rental-items/category/all?page=0&size=10",
         {
             method: "GET",
-            cache: "no-cache",
+            cache: "no-store",
             headers: {
                 Authorization: `Bearer ${session?.user.id_token}`,
             },

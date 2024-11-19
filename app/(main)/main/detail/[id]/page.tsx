@@ -21,7 +21,7 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${session?.user.id_token}`,
             },
-            cache: "no-cache",
+            cache: "no-store",
         }
     );
 

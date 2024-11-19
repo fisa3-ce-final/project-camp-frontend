@@ -52,7 +52,7 @@ const RentalPage: FC<RentalPageProps> = ({ rentalPageData }) => {
                 }&size=10`,
                 {
                     method: "GET",
-                    cache: "no-cache",
+                    cache: "no-store",
                     headers: {
                         Authorization: `Bearer ${session?.user.id_token}`,
                     },

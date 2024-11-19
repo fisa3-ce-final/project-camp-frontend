@@ -50,7 +50,7 @@ const CouponPage: FC<CouponPageProps> = ({ couponData, idToken }) => {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-cache",
+                    cache: "no-store",
                 }
             );
 
@@ -79,7 +79,7 @@ const CouponPage: FC<CouponPageProps> = ({ couponData, idToken }) => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${idToken}`,
                 },
-                cache: "no-cache",
+                cache: "no-store",
             });
 
             if (response.ok) {

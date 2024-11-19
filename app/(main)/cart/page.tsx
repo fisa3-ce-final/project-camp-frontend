@@ -9,19 +9,20 @@ interface CartPageProps {}
 const CartPage: FC<CartPageProps> = async () => {
     const session = await getServerSession(authOptions);
 
-    const response = await fetch(process.env.BACKEND_URL + "/cart-items", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        cache: "no-cache",
-    });
+    // const response = await fetch(process.env.BACKEND_URL + "/cart-items", {
+    //     method: "GET",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${session?.user.id_token}`,
+    //     },
+    //     cache: "no-store",
+    // });
 
-    const data: CartPageData = await response.json();
+    // const data: CartPageData = await response.json();
 
     return (
         <div>
-            <CartList cartPageData={data} idToken={session?.user.id_token!} />
+            <CartList idToken={session?.user.id_token!} />
         </div>
     );
 };
