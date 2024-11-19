@@ -163,9 +163,6 @@ export default function Component({ cartPageData, idToken }: CartListProps) {
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
                                             <div className="flex flex-col items-start text-wrap">
-                                                <span className="text-xs text-muted-foreground">
-                                                    대여 기간
-                                                </span>
                                                 {date.from ? (
                                                     date.to ? (
                                                         <>
