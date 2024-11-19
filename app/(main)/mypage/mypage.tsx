@@ -224,6 +224,12 @@ export function MyPage({ userData }: MyPageProps) {
                         )}
                     </div>
                     <div className="flex-1 space-y-2">
+                        {/* 관리자 뱃지 */}
+                        {userData.role === "ADMIN" && (
+                            <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
+                                관리자
+                            </span>
+                        )}
                         <h2 className="text-2xl font-bold">닉네임</h2>
                         {isEditing ? (
                             <Input
