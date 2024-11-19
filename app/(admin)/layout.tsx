@@ -45,12 +45,12 @@ const items = [
         icon: Home,
     },
     {
-        title: "물품관리",
+        title: "물품 관리",
         url: "/admin/inventory",
         icon: Clipboard,
     },
     {
-        title: "대여관리",
+        title: "대여 관리",
         url: "/admin/rentals",
         icon: Calendar,
     },
