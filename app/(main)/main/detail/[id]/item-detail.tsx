@@ -138,7 +138,7 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
                                 onClick={handleRentButtonClick}
                                 disabled={isLoading} // 비활성화 상태 추가
                             >
-                                {isLoading ? "대여 처리 중..." : "대여하기"}
+                                {isLoading ? "담는 중..." : "장바구니 담기"}
                             </Button>
                         </div>
                     </div>
