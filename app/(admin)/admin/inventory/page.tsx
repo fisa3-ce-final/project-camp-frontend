@@ -5,13 +5,16 @@ import { RentalItemsResponse } from "@/app/types/admin-rental";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/lib/auth-options";
 
-const InventoryPage: FC = async () => {
+const AdminInventoryPage: FC = async () => {
+    const session = await getServerSession(authOptions);
+
     const res = await fetch(
         `${process.env.BACKEND_URL}/admin/rental-items?status=ALL&page=0&size=10`,
         {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${session?.user.id_token!}`,
             },
             cache: "no-cache",
         }
@@ -22,7 +25,6 @@ const InventoryPage: FC = async () => {
     }
 
     const data: RentalItemsResponse = await res.json();
-    const session = await getServerSession(authOptions);
 
     return (
         <div>
@@ -35,4 +37,4 @@ const InventoryPage: FC = async () => {
     );
 };
 
-export default InventoryPage;
+export default AdminInventoryPage;
