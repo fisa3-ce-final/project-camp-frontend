@@ -1,3 +1,4 @@
+// components/CartList.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 const CartList = ({ idToken }: { idToken: string }) => {
     const [cartData, setCartData] = useState<CartPageData | null>(null);
@@ -30,9 +32,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
         from: new Date(),
         to: new Date(new Date().setDate(new Date().getDate() + 3)),
     });
-    const [selectedCoupon, setSelectedCoupon] = useState<string | undefined>(
-        undefined
-    );
+    const [selectedCoupon, setSelectedCoupon] = useState<string | null>(null);
 
     // 데이터 Fetch
     const fetchCartData = async () => {
@@ -104,6 +104,37 @@ const CartList = ({ idToken }: { idToken: string }) => {
     };
     const calculateFinalTotal = () => {
         return Math.floor(calculateTotal() - calculateDiscount());
+    };
+
+    // 대여 신청하기 버튼 클릭 핸들러
+    const handleApplyRental = () => {
+        if (selectedItems.length === 0) {
+            toast.error("선택된 장바구니 항목이 없습니다.");
+            return;
+        }
+
+        const rentalDateISO = date.from.toISOString();
+        const returnDateISO = date.to.toISOString();
+
+        const payload: {
+            cartItemIds: number[];
+            rentalDate: string;
+            returnDate: string;
+            userCouponId?: number;
+        } = {
+            cartItemIds: selectedItems,
+            rentalDate: rentalDateISO,
+            returnDate: returnDateISO,
+        };
+
+        if (selectedCoupon) {
+            payload.userCouponId = parseInt(selectedCoupon, 10);
+        }
+
+        console.log(
+            "백엔드로 전송할 데이터:",
+            JSON.stringify(payload, null, 2)
+        );
     };
 
     if (!cartData) {
@@ -259,6 +290,9 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                         <SelectValue placeholder="쿠폰을 선택하세요" />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value={null!}>
+                                            선택 안 함
+                                        </SelectItem>
                                         {cartData.coupons.map(
                                             (coupon, index) => (
                                                 <SelectItem
@@ -297,7 +331,11 @@ const CartList = ({ idToken }: { idToken: string }) => {
                             </div>
                         </div>
                     </div>
-                    <Button className="w-full" size="lg">
+                    <Button
+                        className="w-full"
+                        size="lg"
+                        onClick={handleApplyRental} // 클릭 핸들러 연결
+                    >
                         대여 신청하기 ✨
                     </Button>
                 </div>
