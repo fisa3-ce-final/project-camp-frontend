@@ -18,12 +18,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { CartPageData } from "@/app/types/cart-data";
+import { CartPageData, PendingOrder } from "@/app/types/cart-data";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const CartList = ({ idToken }: { idToken: string }) => {
     const [cartData, setCartData] = useState<CartPageData | null>(null);
@@ -33,6 +34,43 @@ const CartList = ({ idToken }: { idToken: string }) => {
         to: new Date(new Date().setDate(new Date().getDate() + 3)),
     });
     const [selectedCoupon, setSelectedCoupon] = useState<string | null>(null);
+    const router = useRouter(); // useRouter 훅 초기화
+    const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태
+
+    const checkPendingOrder = async () => {
+        try {
+            const response = await fetch("/backend/orders/pending", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                },
+                cache: "no-store",
+            });
+
+            if (response.ok) {
+                const data: PendingOrder = await response.json();
+                if (data.orderStatus === "PENDING") {
+                    // PENDING 주문이 있으면 /cart/order로 리디렉션
+                    router.push(`/cart/order/${data.id}`);
+                    return;
+                }
+            } else {
+                console.error(
+                    "Failed to fetch pending orders:",
+                    response.statusText
+                );
+                // 필요에 따라 사용자에게 오류 메시지를 표시할 수 있습니다.
+            }
+        } catch (error: any) {
+            console.error("Error fetching pending orders:", error);
+            toast.error("주문 정보를 불러오는 데 실패했습니다.");
+        }
+
+        // PENDING 주문이 없으면 장바구니 데이터 Fetch
+        await fetchCartData();
+        setIsLoading(false);
+    };
 
     // 데이터 Fetch
     const fetchCartData = async () => {
@@ -58,8 +96,8 @@ const CartList = ({ idToken }: { idToken: string }) => {
     };
 
     useEffect(() => {
-        fetchCartData();
-    }, []);
+        checkPendingOrder();
+    }, [idToken, router]);
 
     // Re-added handleSelectItem function
     const handleSelectItem = (id: number) => {
@@ -107,9 +145,10 @@ const CartList = ({ idToken }: { idToken: string }) => {
     };
 
     // 대여 신청하기 버튼 클릭 핸들러
-    const handleApplyRental = () => {
+    const handleApplyRental = async () => {
         if (selectedItems.length === 0) {
-            toast.error("선택된 장바구니 항목이 없습니다.");
+            console.warn("선택된 장바구니 항목이 없습니다.");
+            toast.error("장바구니 항목을 선택해주세요."); // 오류 토스트 표시
             return;
         }
 
@@ -131,16 +170,37 @@ const CartList = ({ idToken }: { idToken: string }) => {
             payload.userCouponId = parseInt(selectedCoupon, 10);
         }
 
-        console.log(
-            "백엔드로 전송할 데이터:",
-            JSON.stringify(payload, null, 2)
-        );
+        try {
+            const response = await fetch("/backend/orders/reserve", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "예약에 실패했습니다.");
+            }
+
+            const result = await response.json();
+            console.log("예약 성공:", result);
+            toast.success("대여 신청이 완료되었습니다!"); // 성공 토스트 표시
+
+            // 성공 시 /cart/order 페이지로 이동
+            router.push(`/cart/order/${result.orderId}`);
+        } catch (error: any) {
+            console.error("예약 신청 오류:", error);
+            toast.error(`대여 신청에 실패했습니다: ${error.message}`); // 오류 토스트 표시
+        }
     };
 
-    if (!cartData) {
+    if (isLoading) {
         return (
             <div className="max-w-4xl mx-auto p-4">
-                {/* 제목 스켈레톤 */}
+                {/* 로딩 중일 때 스켈레톤 또는 로딩 인디케이터 표시 */}
                 <Skeleton className="h-10 w-1/3 mb-6" />
 
                 <div className="grid md:grid-cols-3 gap-6">
@@ -161,6 +221,15 @@ const CartList = ({ idToken }: { idToken: string }) => {
                         <Skeleton className="h-40 w-full rounded-lg" />
                     </div>
                 </div>
+            </div>
+        );
+    }
+
+    if (!cartData) {
+        return (
+            <div className="max-w-4xl mx-auto p-4">
+                <h1 className="text-2xl font-bold mb-6">장바구니 🛒</h1>
+                <p>장바구니에 담긴 상품이 없습니다.</p>
             </div>
         );
     }
@@ -189,7 +258,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                 <img
                                     src={
                                         item.rentalItem.image[0]?.imageUrl ||
-                                        "https://images.unsplash.com/photo-1544077960-604201fe74bc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1651&q=80"
+                                        "/placeholder_rental_image.jpg"
                                     }
                                     alt={item.rentalItem.name}
                                     className="w-20 h-20 object-cover rounded"
