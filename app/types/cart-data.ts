@@ -27,3 +27,11 @@ export interface CartPageData {
         used: boolean;
     }[];
 }
+
+export interface PendingOrder {
+    userId: number;
+    id: number;
+    orderStatus: string;
+    totalAmount: number;
+    createdAt: string;
+}
