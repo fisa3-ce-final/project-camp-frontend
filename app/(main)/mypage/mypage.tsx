@@ -68,18 +68,15 @@ export function MyPage({ userData }: MyPageProps) {
                 formData.append("imageFile", avatarFile); // 이미지 파일 추가
             }
 
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_HOST}/backend/user`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${session?.user.id_token}`,
-                        // 'Content-Type'을 설정하지 마세요. FormData는 자동으로 설정됩니다.
-                    },
-                    body: formData,
-                    cache: "no-cache",
-                }
-            );
+            const response = await fetch(`/backend/user`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${session?.user.id_token}`,
+                    // 'Content-Type'을 설정하지 마세요. FormData는 자동으로 설정됩니다.
+                },
+                body: formData,
+                cache: "no-store",
+            });
             if (response.ok) {
                 // 변경사항을 최종 저장
                 setNickname(tempNickname);
@@ -128,16 +125,13 @@ export function MyPage({ userData }: MyPageProps) {
 
         setIsDeleting(true);
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_HOST}/backend/user`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${session?.user.id_token}`,
-                    },
-                    cache: "no-cache",
-                }
-            );
+            const response = await fetch(`/backend/user`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${session?.user.id_token}`,
+                },
+                cache: "no-store",
+            });
 
             if (response.ok) {
                 alert("계정이 성공적으로 삭제되었습니다.");
@@ -155,7 +149,9 @@ export function MyPage({ userData }: MyPageProps) {
         }
     };
 
-    const handleCouponMoreClick = () => alert("쿠폰 보유 현황 더보기");
+    const handleCouponMoreClick = () => {
+        router.push("/mypage/coupons");
+    };
     const handleRentMoreClick = () => alert("대여중인 물품 더보기");
     const handleLendMoreClick = () => alert("빌려준 물품 더보기");
     const handleOrderHistoryClick = () => alert("주문 내역 더보기");
@@ -224,6 +220,12 @@ export function MyPage({ userData }: MyPageProps) {
                         )}
                     </div>
                     <div className="flex-1 space-y-2">
+                        {/* 관리자 뱃지 */}
+                        {userData.role === "ADMIN" && (
+                            <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
+                                관리자
+                            </span>
+                        )}
                         <h2 className="text-2xl font-bold">닉네임</h2>
                         {isEditing ? (
                             <Input

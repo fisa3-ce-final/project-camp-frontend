@@ -21,7 +21,7 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${session?.user.id_token}`,
             },
-            cache: "no-cache",
+            cache: "no-store",
         }
     );
 
@@ -29,7 +29,7 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
 
     return (
         <div>
-            <ItemDetail itemDetail={data} />
+            <ItemDetail itemDetail={data} idToken={session?.user.id_token!} />
         </div>
     );
 };

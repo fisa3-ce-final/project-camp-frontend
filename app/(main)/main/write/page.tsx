@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -43,6 +44,7 @@ const formSchema = z.object({
 export default function CampingItemForm() {
     const [files, setFiles] = useState<File[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(false); // Loading state
     const router = useRouter();
     const session = useSession();
 
@@ -65,33 +67,41 @@ export default function CampingItemForm() {
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        const formData = new FormData();
-        formData.append("name", values.name);
-        formData.append("description", values.description);
-        formData.append("price", values.price.toString());
-        formData.append("stock", values.stock.toString());
-        formData.append("category", categoryMap[selectedCategory]);
-        values.images.forEach((file) => formData.append("images", file));
+        try {
+            setIsLoading(true); // Set loading state to true
+            const formData = new FormData();
+            formData.append("name", values.name);
+            formData.append("description", values.description);
+            formData.append("price", values.price.toString());
+            formData.append("stock", values.stock.toString());
+            formData.append("category", categoryMap[selectedCategory]);
+            values.images.forEach((file) => formData.append("images", file));
 
-        const response = await fetch(
-            "http://localhost:3000/backend/rental-items",
-            {
+            const response = await fetch("/backend/rental-items", {
                 method: "POST",
                 headers: {
-                    "Cache-Control": "no-cache",
                     Authorization: `Bearer ${session.data?.user.id_token}`,
                 },
                 body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "등록 실패");
             }
-        );
 
-        if (!response.ok) {
-            throw new Error("서버 요청에 실패했습니다.");
+            toast.success("등록이 완료되었습니다!");
+            setFiles([]); // Reset file state
+            router.push("/main");
+        } catch (error) {
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "서버 요청에 실패했습니다."
+            );
+        } finally {
+            setIsLoading(false); // Reset loading state
         }
-
-        alert("등록이 완료되었습니다.");
-        setFiles([]); // 파일 상태 초기화
-        router.push("/main");
     }
 
     return (
@@ -275,8 +285,9 @@ export default function CampingItemForm() {
                             <Button
                                 type="submit"
                                 className="px-6 py-3 rounded-md bg-blue-500 text-white"
+                                disabled={isLoading} // Disable button when loading
                             >
-                                등록하기
+                                {isLoading ? "등록 중..." : "등록하기"}
                             </Button>
                         </div>
                     </form>

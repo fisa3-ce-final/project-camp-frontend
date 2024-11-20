@@ -191,7 +191,7 @@ export default function CommunityPostForm() {
         const res = await fetch("/backend/community", {
             method: "POST",
             body: formData,
-            cache: "no-cache",
+            cache: "no-store",
         });
 
         if (res.ok) {

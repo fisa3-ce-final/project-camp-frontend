@@ -8,6 +8,7 @@ export interface RentalItemImage {
 }
 
 export interface RentalItemDetail {
+    id: string;
     uuid: string;
     username: string;
     userImageUrl: string | null;

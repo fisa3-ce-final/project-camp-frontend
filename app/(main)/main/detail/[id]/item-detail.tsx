@@ -1,7 +1,7 @@
-// app/item/[id]/item-detail.tsx
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,19 +14,21 @@ import {
 import { RentalItemDetail } from "@/app/types/rental-item";
 import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 interface ItemDetailProps {
     itemDetail: RentalItemDetail;
+    idToken: string;
 }
 
-const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
+const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
     const {
+        id,
         name,
         description,
         price,
         stock,
         category,
-        status,
         viewCount,
         ratingAvg,
         reviewNum,
@@ -34,12 +36,46 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
         image,
     } = itemDetail;
 
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleRentButtonClick = async () => {
+        try {
+            setIsLoading(true);
+            const response = await fetch("/backend/cart-items", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({ rentalItemId: id }),
+                cache: "no-store",
+            });
+
+            if (response.ok) {
+                toast.success("장바구니에 담기를 성공하였습니다!");
+                router.push("/main");
+            } else {
+                const errorText = await response.text();
+                toast.error(errorText);
+                // setTimeout(() => {
+                //     window.location.reload(); // 요청 실패 시 새로고침
+                // }, 1000);
+            }
+        } catch (error) {
+            toast.error("서버와의 통신 중 오류가 발생했습니다.");
+            // setTimeout(() => {
+            //     window.location.reload(); // 예외 발생 시 새로고침
+            // }, 1000);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="p-4 flex justify-center">
-            {/* 카드 형태 컨테이너 */}
             <div className="w-full max-w-4xl bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
                 <div className="flex flex-col gap-6 p-6">
-                    {/* 이미지 Carousel 섹션 */}
                     <div className="w-full flex justify-center">
                         {image?.length > 0 ? (
                             <Carousel className="w-full max-w-md">
@@ -58,7 +94,6 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
                                         </CarouselItem>
                                     ))}
                                 </CarouselContent>
-
                                 <CarouselPrevious />
                                 <CarouselNext />
                             </Carousel>
@@ -69,7 +104,6 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
                         )}
                     </div>
 
-                    {/* 상세 정보 섹션 */}
                     <div className="flex flex-col">
                         <div className="flex flex-wrap gap-2 mb-4">
                             <Badge variant="secondary">
@@ -98,8 +132,13 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail }) => {
                         <p className="mb-4">{description}</p>
 
                         <div className="mt-4">
-                            <Button variant="default" className="w-full">
-                                대여하기
+                            <Button
+                                variant="default"
+                                className="w-full"
+                                onClick={handleRentButtonClick}
+                                disabled={isLoading} // 비활성화 상태 추가
+                            >
+                                {isLoading ? "담는 중..." : "장바구니 담기"}
                             </Button>
                         </div>
                     </div>

@@ -132,7 +132,7 @@ export default function CommunityPostDetailPage() {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ content: newComment, userId }),
-                    cache: "no-cache",
+                    cache: "no-store",
                 }
             );
 
@@ -155,7 +155,7 @@ export default function CommunityPostDetailPage() {
                 {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
-                    cache: "no-cache",
+                    cache: "no-store",
                 }
             );
 
@@ -182,7 +182,7 @@ export default function CommunityPostDetailPage() {
                 {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
-                    cache: "no-cache",
+                    cache: "no-store",
                 }
             );
 

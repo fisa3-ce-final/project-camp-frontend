@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { categoryMapEngToKor } from "@/app/types/category-map";
+import { Badge } from "@/components/ui/badge";
 
 interface InventoryClientProps {
     initialData: RentalItem[];
@@ -37,7 +38,7 @@ const InventoryClient: FC<InventoryClientProps> = ({
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-cache",
+                    cache: "no-store",
                 }
             );
 
@@ -61,7 +62,7 @@ const InventoryClient: FC<InventoryClientProps> = ({
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-cache",
+                    cache: "no-store",
                 }
             );
 
@@ -91,7 +92,19 @@ const InventoryClient: FC<InventoryClientProps> = ({
                         </CardHeader>
                         <CardContent>
                             <p>가격: {item.price.toFixed(2)} 원 </p>
-                            <p>상태: {item.status}</p>
+                            상태:
+                            {/* AVAILABE, PENDING, REJECTED  */}
+                            <Badge
+                                className={
+                                    item.status === "AVAILABLE"
+                                        ? "bg-green-600"
+                                        : item.status === "PENDING"
+                                        ? "bg-yellow-600"
+                                        : "bg-red-600"
+                                }
+                            >
+                                {item.status}
+                            </Badge>
                         </CardContent>
                         <CardFooter className="flex justify-between">
                             <Button
