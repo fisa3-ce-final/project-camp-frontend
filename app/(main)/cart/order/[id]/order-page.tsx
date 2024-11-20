@@ -19,7 +19,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
     useEffect(() => {
         if (!orderId) {
             toast.error("주문 ID가 없습니다.");
-            router.push("/cart");
+            router.push("/logout");
             return;
         }
 
@@ -165,14 +165,14 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                                     <div className="flex items-center space-x-4">
                                         {/* 상품 이미지 (임의의 이미지 사용) */}
 
-                                        <img
+                                        {/* <img
                                             src={
                                                 // item.image[0]?.imageUrl ||
                                                 "/placeholder_rental_image.jpg"
                                             }
                                             alt={item.itemName}
                                             className="w-20 h-20 object-cover rounded"
-                                        />
+                                        /> */}
                                         <div>
                                             <p className="font-medium">
                                                 {item.itemName}
