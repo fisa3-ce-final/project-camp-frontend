@@ -272,24 +272,34 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                                                 {coupon.amount}
                                             </TableCell>
                                             <TableCell>
-                                                <Button
-                                                    onClick={() =>
-                                                        handleCouponReceive(
+                                                {coupon.received ? ( // received가 true이면 "수령 완료" 표시
+                                                    <Button disabled={true}>
+                                                        수령 완료
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        onClick={() =>
+                                                            handleCouponReceive(
+                                                                coupon.couponId
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            coupon.amount ===
+                                                                0 ||
+                                                            loadingStates[
+                                                                coupon.couponId
+                                                            ]
+                                                        } // 수량이 없거나 로딩 중일 때 비활성화
+                                                    >
+                                                        {loadingStates[
                                                             coupon.couponId
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        coupon.amount === 0
-                                                    }
-                                                >
-                                                    {loadingStates[
-                                                        coupon.couponId
-                                                    ]
-                                                        ? "받는 중..." // 로딩 상태 텍스트
-                                                        : coupon.amount > 0
-                                                        ? "받기"
-                                                        : "품절"}
-                                                </Button>
+                                                        ]
+                                                            ? "받는 중..." // 로딩 상태 표시
+                                                            : coupon.amount > 0
+                                                            ? "받기"
+                                                            : "품절"}
+                                                    </Button>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ))}
