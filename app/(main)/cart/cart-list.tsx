@@ -235,14 +235,16 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                         <SelectValue placeholder="쿠폰을 선택하세요" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {cartData.coupons.map((coupon) => (
-                                            <SelectItem
-                                                key={coupon.couponId}
-                                                value={coupon.couponId.toString()}
-                                            >
-                                                {coupon.name}
-                                            </SelectItem>
-                                        ))}
+                                        {cartData.coupons.map(
+                                            (coupon, index) => (
+                                                <SelectItem
+                                                    key={`${coupon.couponId}-${index}`}
+                                                    value={coupon.couponId.toString()}
+                                                >
+                                                    {coupon.name}
+                                                </SelectItem>
+                                            )
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </div>

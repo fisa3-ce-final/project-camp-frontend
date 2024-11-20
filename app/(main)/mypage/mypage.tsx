@@ -149,7 +149,9 @@ export function MyPage({ userData }: MyPageProps) {
         }
     };
 
-    const handleCouponMoreClick = () => alert("쿠폰 보유 현황 더보기");
+    const handleCouponMoreClick = () => {
+        router.push("/mypage/coupons");
+    };
     const handleRentMoreClick = () => alert("대여중인 물품 더보기");
     const handleLendMoreClick = () => alert("빌려준 물품 더보기");
     const handleOrderHistoryClick = () => alert("주문 내역 더보기");
