@@ -1,16 +1,19 @@
 import { GlobalNav } from "@/app/components/global-nav";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../lib/auth-options";
 
-export default function MainLayout({
+export default async function MainLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await getServerSession(authOptions);
     return (
         <section>
             {/* Global Navigation for Desktop */}
             <header className="hidden md:block">
-                <GlobalNav />
+                <GlobalNav idToken={session?.user.id_token!} />
             </header>
             {/* Main Content */}
 
@@ -18,7 +21,7 @@ export default function MainLayout({
 
             {/* Global Navigation for Mobile */}
             <footer className="md:hidden fixed bottom-0 w-full z-10">
-                <GlobalNav />
+                <GlobalNav idToken={session?.user.id_token!} />
             </footer>
         </section>
     );
