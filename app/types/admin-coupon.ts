@@ -10,6 +10,8 @@ export interface Coupon {
     expiryDate: string;
     amount: number;
     createdAt: string;
+    received: boolean;
+    used: boolean;
 }
 
 export interface CouponData {

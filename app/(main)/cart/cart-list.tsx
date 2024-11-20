@@ -69,17 +69,41 @@ const CartList = ({ idToken }: { idToken: string }) => {
                 : [...prev, id]
         );
     };
-
-    // Updated calculateTotal to consider selected items
     const calculateTotal = () => {
         if (!cartData) return 0;
 
-        return selectedItems.reduce((total, id) => {
-            const item = cartData.cartItems.find((item) => item.id === id);
-            return (
-                total + (item?.rentalItem.price || 0) * (item?.quantity || 0)
-            );
-        }, 0);
+        return Math.floor(
+            selectedItems.reduce((total, id) => {
+                const item = cartData.cartItems.find((item) => item.id === id);
+                return (
+                    total +
+                    (item?.rentalItem.price || 0) * (item?.quantity || 0)
+                );
+            }, 0)
+        );
+    };
+
+    const calculateDiscount = () => {
+        if (!selectedCoupon || !cartData) return 0;
+
+        const coupon = cartData.coupons.find(
+            (coupon) => coupon.couponId.toString() === selectedCoupon
+        );
+
+        if (!coupon) return 0;
+
+        if (coupon.type === "FIXED_AMOUNT_DISCOUNT") {
+            return Math.floor(coupon.discount); // 고정 금액 할인
+        }
+
+        if (coupon.type === "PERCENTAGE_DISCOUNT") {
+            return Math.floor((calculateTotal() * coupon.discount) / 100); // 퍼센트 할인
+        }
+
+        return 0;
+    };
+    const calculateFinalTotal = () => {
+        return Math.floor(calculateTotal() - calculateDiscount());
     };
 
     if (!cartData) {
@@ -259,31 +283,14 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                 <div className="flex justify-between mb-2 text-primary">
                                     <span>쿠폰 할인</span>
                                     <span>
-                                        {selectedCoupon
-                                            ? cartData.coupons
-                                                  .find(
-                                                      (coupon) =>
-                                                          coupon.couponId.toString() ===
-                                                          selectedCoupon
-                                                  )
-                                                  ?.discount.toLocaleString()
-                                            : 0}
+                                        -{calculateDiscount().toLocaleString()}
                                         원
                                     </span>
                                 </div>
                                 <div className="flex justify-between font-bold text-lg">
                                     <span>결제 예정금액</span>
                                     <span>
-                                        {(
-                                            calculateTotal() -
-                                            (selectedCoupon
-                                                ? cartData.coupons.find(
-                                                      (coupon) =>
-                                                          coupon.couponId.toString() ===
-                                                          selectedCoupon
-                                                  )?.discount || 0
-                                                : 0)
-                                        ).toLocaleString()}
+                                        {calculateFinalTotal().toLocaleString()}
                                         원
                                     </span>
                                 </div>
