@@ -120,6 +120,9 @@ const CartList = ({ idToken }: { idToken: string }) => {
                         <div
                             key={item.id}
                             className="flex items-center justify-between border rounded-lg p-4 hover:shadow-md transition-shadow"
+                            onClick={() => {
+                                handleSelectItem(item.id);
+                            }}
                         >
                             <div className="flex items-center space-x-4">
                                 <Checkbox
@@ -237,9 +240,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                                 key={coupon.couponId}
                                                 value={coupon.couponId.toString()}
                                             >
-                                                {coupon.name} (
-                                                {coupon.discount.toLocaleString()}
-                                                원 할인)
+                                                {coupon.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
