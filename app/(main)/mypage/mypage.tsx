@@ -152,9 +152,11 @@ export function MyPage({ userData }: MyPageProps) {
     const handleCouponMoreClick = () => {
         router.push("/mypage/coupons");
     };
+    const handleOrderHistoryClick = () => {
+        router.push("/mypage/orders");
+    };
     const handleRentMoreClick = () => alert("대여중인 물품 더보기");
     const handleLendMoreClick = () => alert("빌려준 물품 더보기");
-    const handleOrderHistoryClick = () => alert("주문 내역 더보기");
 
     if (!userData) {
         return (
@@ -314,6 +316,18 @@ export function MyPage({ userData }: MyPageProps) {
                     </Button>
                 </section>
 
+                {/* 주문 내역 버튼 */}
+                <section className="flex justify-between items-center border-t pt-4">
+                    <h2 className="text-lg font-bold">주문 내역</h2>
+                    <Button
+                        variant="outline"
+                        className="w-24"
+                        onClick={handleOrderHistoryClick}
+                    >
+                        더보기
+                    </Button>
+                </section>
+
                 {/* 대여중인 물품 버튼 */}
                 <section className="flex justify-between items-center border-t pt-4">
                     <h2 className="text-lg font-bold">대여중인 물품</h2>
@@ -333,18 +347,6 @@ export function MyPage({ userData }: MyPageProps) {
                         variant="outline"
                         className="w-24"
                         onClick={handleLendMoreClick}
-                    >
-                        더보기
-                    </Button>
-                </section>
-
-                {/* 주문 내역 버튼 */}
-                <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">주문 내역</h2>
-                    <Button
-                        variant="outline"
-                        className="w-24"
-                        onClick={handleOrderHistoryClick}
                     >
                         더보기
                     </Button>

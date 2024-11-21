@@ -1,22 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Coupon } from "@/app/types/admin-coupon";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Scissors } from "lucide-react";
 
-export default function MypageCoupons({ idToken }: { idToken: string }) {
+interface Coupon {
+    couponId: number;
+    name: string;
+    discount: number;
+    type: string;
+    expiryDate: string;
+    amount?: number;
+    received?: boolean;
+}
+
+export default function ImprovedMypageCoupons({
+    idToken,
+}: {
+    idToken: string;
+}) {
     const router = useRouter();
     const [coupons, setCoupons] = useState<Coupon[]>([]);
     const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]);
@@ -35,7 +41,6 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                 `/backend/user-coupons?page=${page}&size=10`,
                 {
                     method: "GET",
-                    cache: "no-store",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
@@ -59,7 +64,6 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                 `/backend/community/coupon?page=${page}&size=10`,
                 {
                     method: "GET",
-                    cache: "no-store",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
@@ -75,23 +79,12 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
             setLoadingAvailable(false);
         }
     };
-    const renderDiscountValue = (coupon: Coupon) => {
-        if (coupon.type === "PERCENTAGE_DISCOUNT") {
-            return `${coupon.discount}%`;
-        }
-        if (coupon.type === "FIXED_AMOUNT_DISCOUNT") {
-            return `${coupon.discount.toLocaleString()}원`;
-        }
-        return "-";
-    };
 
     const handleCouponReceive = async (couponId: number) => {
-        setLoadingStates((prev) => ({ ...prev, [couponId]: true })); // 버튼 로딩 상태 활성화
-
+        setLoadingStates((prev) => ({ ...prev, [couponId]: true }));
         try {
             const response = await fetch("/backend/user-coupons", {
                 method: "POST",
-                cache: "no-store",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${idToken}`,
@@ -100,7 +93,7 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
             });
             if (response.ok) {
                 toast.success("🎉 쿠폰을 성공적으로 받았습니다!");
-                fetchAvailableCoupons(currentPage); // 새로고침
+                fetchAvailableCoupons(currentPage);
             } else {
                 toast.error("❌ 쿠폰 받기에 실패했습니다.");
             }
@@ -108,15 +101,12 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
             console.error("Error receiving coupon:", error);
             toast.error("❌ 쿠폰 받기에 실패했습니다.");
         } finally {
-            setLoadingStates((prev) => ({ ...prev, [couponId]: false })); // 로딩 상태 해제
+            setLoadingStates((prev) => ({ ...prev, [couponId]: false }));
         }
     };
 
     useEffect(() => {
-        // 페이지 로드 시 최상단으로 스크롤
         window.scrollTo(0, 0);
-
-        // 보유 쿠폰 목록 초기 로드
         fetchCoupons();
     }, []);
 
@@ -129,9 +119,67 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
         }
     };
 
+    const renderCoupon = (coupon: Coupon, isAvailable: boolean) => (
+        <div
+            key={`coupon-${coupon.couponId}`}
+            className="relative bg-white rounded-lg shadow-md overflow-hidden mb-4"
+        >
+            {/* <div className="absolute top-0 left-0 w-6 h-6 bg-primary rounded-br-lg"></div>
+            <div className="absolute top-0 right-0 w-6 h-6 bg-primary rounded-bl-lg"></div> */}
+            <div className="px-6 py-4">
+                <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-xl font-bold text-primary">
+                        {coupon.name}
+                    </h3>
+                    <Scissors className="text-primary" />
+                </div>
+                <p className="text-3xl font-bold mb-2">
+                    {coupon.type === "PERCENTAGE_DISCOUNT"
+                        ? `${coupon.discount}% OFF`
+                        : `${coupon.discount.toLocaleString()}원 할인`}
+                </p>
+                <p className="text-sm text-gray-600 mb-2">
+                    만료일: {new Date(coupon.expiryDate).toLocaleDateString()}
+                </p>
+                {isAvailable && (
+                    <div className="flex justify-between items-center mt-2">
+                        <p className="text-sm text-gray-600">
+                            남은 수량: {coupon.amount}
+                        </p>
+                        {coupon.received ? (
+                            <Button
+                                disabled
+                                className="bg-gray-300 text-gray-600"
+                            >
+                                수령 완료
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={() =>
+                                    handleCouponReceive(coupon.couponId)
+                                }
+                                disabled={
+                                    coupon.amount === 0 ||
+                                    loadingStates[coupon.couponId]
+                                }
+                                className="bg-primary hover:bg-primary-dark text-white"
+                            >
+                                {loadingStates[coupon.couponId]
+                                    ? "받는 중..."
+                                    : coupon.amount! > 0
+                                    ? "받기"
+                                    : "품절"}
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-2 bg-primary"></div>
+        </div>
+    );
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            {/* 뒤로가기 버튼 */}
             <Button
                 variant="outline"
                 onClick={() => router.back()}
@@ -140,12 +188,12 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                 ← 뒤로가기
             </Button>
 
-            <h1 className="text-2xl font-bold mb-4">🎁 내 쿠폰</h1>
+            <h1 className="text-3xl font-bold mb-6">🎁 내 쿠폰</h1>
             <Tabs
                 defaultValue="list"
                 className="w-full"
                 onValueChange={(value) => {
-                    setCurrentPage(0); // 탭 변경 시 페이지 초기화
+                    setCurrentPage(0);
                     if (value === "list") {
                         fetchCoupons(0);
                     } else if (value === "get") {
@@ -153,52 +201,33 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                     }
                 }}
             >
-                <TabsList className="flex justify-center mb-4">
-                    <TabsTrigger value="list">보유 쿠폰</TabsTrigger>
-                    <TabsTrigger value="get">받을 수 있는 쿠폰</TabsTrigger>
+                <TabsList className="flex justify-center mb-6">
+                    <TabsTrigger value="list" className="px-6 py-2">
+                        보유 쿠폰
+                    </TabsTrigger>
+                    <TabsTrigger value="get" className="px-6 py-2">
+                        받을 수 있는 쿠폰
+                    </TabsTrigger>
                 </TabsList>
 
-                {/* 보유 쿠폰 목록 */}
                 <TabsContent value="list">
                     {loading ? (
-                        <div>
-                            <Skeleton className="h-8 w-full mb-2" />
-                            <Skeleton className="h-8 w-full mb-2" />
-                            <Skeleton className="h-8 w-full mb-2" />
+                        <div className="space-y-4">
+                            {[...Array(3)].map((_, index) => (
+                                <Skeleton
+                                    key={index}
+                                    className="h-40 w-full rounded-lg"
+                                />
+                            ))}
                         </div>
                     ) : (
                         <>
-                            <Table className="w-full">
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>쿠폰명</TableHead>
-                                        <TableHead>할인율</TableHead>
-                                        <TableHead>유형</TableHead>
-                                        <TableHead>만료일</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {coupons.map((coupon) => (
-                                        <TableRow
-                                            key={
-                                                "coupon_list-" + coupon.couponId
-                                            }
-                                        >
-                                            <TableCell>{coupon.name}</TableCell>
-                                            <TableCell>
-                                                {renderDiscountValue(coupon)}
-                                            </TableCell>
-                                            <TableCell>{coupon.type}</TableCell>
-                                            <TableCell>
-                                                {new Date(
-                                                    coupon.expiryDate
-                                                ).toLocaleDateString()}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            <div className="flex justify-between items-center mt-4">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {coupons.map((coupon) =>
+                                    renderCoupon(coupon, false)
+                                )}
+                            </div>
+                            <div className="flex justify-between items-center mt-6">
                                 <Button
                                     disabled={currentPage === 0}
                                     onClick={() =>
@@ -210,7 +239,7 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                                 >
                                     이전
                                 </Button>
-                                <p>
+                                <p className="text-sm">
                                     {currentPage + 1} / {totalPages} 페이지
                                 </p>
                                 <Button
@@ -229,83 +258,24 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                     )}
                 </TabsContent>
 
-                {/* 받을 수 있는 쿠폰 목록 */}
                 <TabsContent value="get">
                     {loadingAvailable ? (
-                        <div>
-                            <Skeleton className="h-8 w-full mb-2" />
-                            <Skeleton className="h-8 w-full mb-2" />
-                            <Skeleton className="h-8 w-full mb-2" />
+                        <div className="space-y-4">
+                            {[...Array(3)].map((_, index) => (
+                                <Skeleton
+                                    key={index}
+                                    className="h-40 w-full rounded-lg"
+                                />
+                            ))}
                         </div>
                     ) : (
                         <>
-                            <Table className="w-full">
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>쿠폰명</TableHead>
-                                        <TableHead>할인율</TableHead>
-                                        <TableHead>유형</TableHead>
-                                        <TableHead>만료일</TableHead>
-                                        <TableHead>수량</TableHead>
-                                        <TableHead>작업</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {availableCoupons.map((coupon) => (
-                                        <TableRow
-                                            key={
-                                                "available_coupon-" +
-                                                coupon.couponId
-                                            }
-                                        >
-                                            <TableCell>{coupon.name}</TableCell>
-                                            <TableCell>
-                                                {renderDiscountValue(coupon)}
-                                            </TableCell>
-                                            <TableCell>{coupon.type}</TableCell>
-                                            <TableCell>
-                                                {new Date(
-                                                    coupon.expiryDate
-                                                ).toLocaleDateString()}
-                                            </TableCell>
-                                            <TableCell>
-                                                {coupon.amount}
-                                            </TableCell>
-                                            <TableCell>
-                                                {coupon.received ? ( // received가 true이면 "수령 완료" 표시
-                                                    <Button disabled={true}>
-                                                        수령 완료
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        onClick={() =>
-                                                            handleCouponReceive(
-                                                                coupon.couponId
-                                                            )
-                                                        }
-                                                        disabled={
-                                                            coupon.amount ===
-                                                                0 ||
-                                                            loadingStates[
-                                                                coupon.couponId
-                                                            ]
-                                                        } // 수량이 없거나 로딩 중일 때 비활성화
-                                                    >
-                                                        {loadingStates[
-                                                            coupon.couponId
-                                                        ]
-                                                            ? "받는 중..." // 로딩 상태 표시
-                                                            : coupon.amount > 0
-                                                            ? "받기"
-                                                            : "품절"}
-                                                    </Button>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            <div className="flex justify-between items-center mt-4">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {availableCoupons.map((coupon) =>
+                                    renderCoupon(coupon, true)
+                                )}
+                            </div>
+                            <div className="flex justify-between items-center mt-6">
                                 <Button
                                     disabled={currentPage === 0}
                                     onClick={() =>
@@ -314,7 +284,7 @@ export default function MypageCoupons({ idToken }: { idToken: string }) {
                                 >
                                     이전
                                 </Button>
-                                <p>
+                                <p className="text-sm">
                                     {currentPage + 1} / {totalPages} 페이지
                                 </p>
                                 <Button

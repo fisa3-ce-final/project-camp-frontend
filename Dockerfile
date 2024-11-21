@@ -1,6 +1,9 @@
 # Stage 1: Install dependencies and build the application
 FROM node:20-alpine AS builder
 
+# Set ARG for backend URL at build time
+ARG BACKEND_URL
+
 # Set working directory
 WORKDIR /app
 
@@ -14,6 +17,9 @@ RUN npm ci
 
 # Copy the rest of the application code
 COPY . .
+
+# Set the environment variable for build time
+ENV BACKEND_URL=$BACKEND_URL
 
 # Build the Next.js application
 RUN npm run build

@@ -284,7 +284,7 @@ export default function CampingItemForm() {
                         <div className="text-center">
                             <Button
                                 type="submit"
-                                className="px-6 py-3 rounded-md bg-blue-500 text-white"
+                                className="px-6 py-3 rounded-md"
                                 disabled={isLoading} // Disable button when loading
                             >
                                 {isLoading ? "등록 중..." : "등록하기"}
