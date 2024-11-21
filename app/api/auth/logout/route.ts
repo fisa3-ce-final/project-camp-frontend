@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
     try {
-        console.log("logout", process.env.NEXT_PUBLIC_HOST);
+        console.log("logout!!", process.env.FRONTEND_URL);
         const logoutUrl = `${process.env.COGNITO_DOMAIN}/logout?client_id=${
             process.env.COGNITO_CLIENT_ID
-        }&logout_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_HOST!)}`;
+        }&logout_uri=${encodeURIComponent(process.env.FRONTEND_URL!)}`;
         console.log("logout");
         return NextResponse.redirect(logoutUrl);
     } catch (error) {
