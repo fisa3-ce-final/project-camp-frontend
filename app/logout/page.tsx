@@ -8,7 +8,7 @@ const Page: FC<PageProps> = ({}) => {
     useEffect(() => {
         signOut({
             redirect: true,
-            callbackUrl: process.env.NEXT_PUBLIC_HOST + "/api/auth/logout",
+            callbackUrl: "/api/auth/logout",
         });
     }, []);
     return (
