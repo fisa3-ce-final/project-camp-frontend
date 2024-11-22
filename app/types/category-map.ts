@@ -19,3 +19,16 @@ export const categoryMapEngToKor: { [key: string]: string } = {
     CAMPING_FURNITURE: "캠핑 가구",
     LIGHTING: "조명",
 };
+
+export const statusMapping: { [key: string]: string } = {
+    PENDING: "심사 중",
+    AVAILABLE: "심사 완료",
+    REJECTED: "심사 거부", // 새로운 상태 추가
+};
+
+// 배지 색상 매핑 추가 예시
+export const statusColorMapping: { [key: string]: string } = {
+    PENDING: "yellow",
+    AVAILABLE: "green",
+    REJECTED: "red", // 새로운 상태에 대한 색상 추가
+};
