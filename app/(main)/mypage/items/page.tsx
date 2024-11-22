@@ -1,9 +1,16 @@
 import { FC } from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth-options";
+import MyItemsPage from "./my-items-page";
 
-interface ItemsServerPageProps {}
+interface MyRentalItemsProps {
+    idToken: string;
+}
 
-const ItemsServerPage: FC<ItemsServerPageProps> = async ({}) => {
-    return <div>ItemsServerPage</div>;
+const MyRentalItems: FC<MyRentalItemsProps> = async ({ idToken }) => {
+    const session = await getServerSession(authOptions);
+
+    return <MyItemsPage idToken={session?.user.id_token!} />;
 };
 
-export default ItemsServerPage;
+export default MyRentalItems;
