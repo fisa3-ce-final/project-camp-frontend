@@ -7,7 +7,7 @@ interface MyRentalItemsProps {
     idToken: string;
 }
 
-const MyRentalItems: FC<MyRentalItemsProps> = async ({ idToken }) => {
+const MyRentalItems: FC<MyRentalItemsProps> = async () => {
     const session = await getServerSession(authOptions);
 
     return <MyItemsPage idToken={session?.user.id_token!} />;
