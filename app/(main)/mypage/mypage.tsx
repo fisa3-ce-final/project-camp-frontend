@@ -155,8 +155,12 @@ export function MyPage({ userData }: MyPageProps) {
     const handleOrderHistoryClick = () => {
         router.push("/mypage/orders");
     };
-    const handleRentMoreClick = () => alert("대여중인 물품 더보기");
-    const handleLendMoreClick = () => alert("빌려준 물품 더보기");
+    const handleRentMoreClick = () => {
+        router.push("/mypage/rentals");
+    };
+    const handleLendMoreClick = () => {
+        router.push("/mypage/items");
+    };
 
     if (!userData) {
         return (
@@ -342,7 +346,7 @@ export function MyPage({ userData }: MyPageProps) {
 
                 {/* 빌려준 물품 버튼 */}
                 <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">빌려준 물품</h2>
+                    <h2 className="text-lg font-bold">등록한 물품</h2>
                     <Button
                         variant="outline"
                         className="w-24"
