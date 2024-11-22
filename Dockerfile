@@ -5,12 +5,10 @@ FROM node:20-alpine AS builder
 ARG BACKEND_URL
 ARG FRONTEND_URL
 ARG NEXTAUTH_URL
-ARG COGNITO_LOGOUT_URL
-ARG NEXTAUTH_SECRET
-ARG COGNITO_DOMAIN
-ARG COGNITO_ISSUER
-ARG COGNITO_CLIENT_SECRET
-ARG COGNITO_CLIENT_ID
+
+ENV BACKEND_URL=$BACKEND_URL
+ENV FRONTEND_URL=$FRONTEND_URL
+ENV NEXTAUTH_URL=$NEXTAUTH_URL
 
 # Set working directory
 WORKDIR /app
@@ -21,23 +19,11 @@ WORKDIR /app
 # Install dependencies
 # RUN npm install --frozen-lockfile
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --frozen-lockfile
 
 # Copy the rest of the application code
 COPY . .
 
-# Set the environment variable for build time
-ENV BACKEND_URL=$BACKEND_URL
-ENV FRONTEND_URL=$FRONTEND_URL
-ENV NEXTAUTH_URL=$NEXTAUTH_URL
-ENV COGNITO_LOGOUT_URL=$COGNITO_LOGOUT_URL
-ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
-ENV COGNITO_DOMAIN=$COGNITO_DOMAIN
-ENV COGNITO_ISSUER=$COGNITO_ISSUER
-ENV COGNITO_CLIENT_SECRET=$COGNITO_CLIENT_SECRET
-ENV COGNITO_CLIENT_ID=$COGNITO_CLIENT_ID
-
-# Build the Next.js application
 RUN npm run build
 
 # Stage 2: Create the production image
@@ -45,13 +31,16 @@ FROM node:20-alpine AS production
 
 # Set NODE_ENV to production
 ENV NODE_ENV=production
+ENV BACKEND_URL=$BACKEND_URL
+ENV FRONTEND_URL=$FRONTEND_URL
+ENV NEXTAUTH_URL=$NEXTAUTH_URL
 
 # Set working directory
 WORKDIR /app
 
 # Install only production dependencies
 COPY package*.json ./
-RUN npm ci --only=production 
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy the built application from the builder stage
 COPY --from=builder /app/next.config.mjs ./
