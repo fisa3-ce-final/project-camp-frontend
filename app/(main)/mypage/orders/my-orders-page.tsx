@@ -31,33 +31,44 @@ async function cancelOrder(orderId: number, idToken: string) {
     }
 }
 
+interface MyOrdersPageProps {
+    idToken: string;
+}
+
+async function fetchOrders(
+    page: number,
+    idToken: string
+): Promise<OrderPageData> {
+    const response = await fetch(
+        `/backend/rental-items/my-orders?page=${page}&size=10`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+            },
+        }
+    );
+    if (!response.ok) {
+        throw new Error("Failed to fetch orders");
+    }
+    return response.json();
+}
+
 const MyOrdersPage: FC<MyOrdersPageProps> = ({ idToken }) => {
     const [orderPageData, setOrderPageData] = useState<OrderPageData | null>(
         null
     );
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(0);
     const router = useRouter();
 
     useEffect(() => {
-        const fetchOrders = async () => {
+        const loadOrders = async () => {
+            setIsLoading(true);
             try {
-                const response = await fetch(
-                    `/backend/rental-items/my-orders?page=0&size=10`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${idToken}`,
-                        },
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error("Failed to fetch orders");
-                }
-
-                const data: OrderPageData = await response.json();
+                const data = await fetchOrders(currentPage, idToken);
                 setOrderPageData(data);
             } catch (err) {
                 setError(
@@ -68,9 +79,12 @@ const MyOrdersPage: FC<MyOrdersPageProps> = ({ idToken }) => {
             }
         };
 
-        fetchOrders();
-        window.scrollTo(0, 0);
-    }, [idToken]);
+        loadOrders();
+    }, [currentPage, idToken]);
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
+    };
 
     if (error) {
         return <div className="text-center text-red-500">{error}</div>;
@@ -144,7 +158,6 @@ const MyOrdersPage: FC<MyOrdersPageProps> = ({ idToken }) => {
                                                           "Failed to cancel order:",
                                                           err
                                                       );
-                                                      // You might want to show an error message to the user here
                                                       toast.error(
                                                           "주문 취소에 실패했습니다."
                                                       );
@@ -160,11 +173,26 @@ const MyOrdersPage: FC<MyOrdersPageProps> = ({ idToken }) => {
                           ))}
                 </div>
                 {!isLoading && orderPageData && (
-                    <div className="mt-4 text-center">
+                    <div className="mt-4 flex justify-between items-center">
+                        <Button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 0}
+                        >
+                            이전
+                        </Button>
                         <p>
-                            현재 페이지: {orderPageData.pageable.pageNumber + 1}{" "}
-                            / {orderPageData.totalPages}
+                            페이지 {currentPage + 1} /{" "}
+                            {orderPageData.totalPages}
                         </p>
+                        <Button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={
+                                orderPageData.last ||
+                                orderPageData.content.length === 0
+                            }
+                        >
+                            다음
+                        </Button>
                     </div>
                 )}
             </div>
