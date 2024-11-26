@@ -15,6 +15,8 @@ const CheckoutPage = ({ idToken }) => {
     const [widgets, setWidgets] = useState(null);
     const [customerKey, setCustomerKey] = useState(null);
     const [paymentInfo, setPaymentInfo] = useState(null);
+    const [paymentWidget, setPaymentWidget] = useState(null);
+    const [agreementWidget, setAgreementWidget] = useState(null);
 
     useEffect(() => {
         async function fetchInitialData() {
@@ -97,19 +99,26 @@ const CheckoutPage = ({ idToken }) => {
                 return;
             }
 
+            if (paymentWidget) {
+                paymentWidget.destroy();
+            }
+            if (agreementWidget) {
+                agreementWidget.destroy();
+            }
+
             await widgets.setAmount(amount);
 
-            await Promise.all([
-                widgets.renderPaymentMethods({
-                    selector: "#payment-method",
-                    variantKey: "DEFAULT",
-                }),
-                widgets.renderAgreement({
-                    selector: "#agreement",
-                    variantKey: "AGREEMENT",
-                }),
-            ]);
+            const newPaymentWidget = await widgets.renderPaymentMethods({
+                selector: "#payment-method",
+                variantKey: "DEFAULT",
+            });
+            const newAgreementWidget = await widgets.renderAgreement({
+                selector: "#agreement",
+                variantKey: "AGREEMENT",
+            });
 
+            setPaymentWidget(newPaymentWidget);
+            setAgreementWidget(newAgreementWidget);
             setReady(true);
         }
 
@@ -118,21 +127,18 @@ const CheckoutPage = ({ idToken }) => {
 
     const saveAmount = async () => {
         try {
-            const response = await fetch(
-                "http://localhost:8080/orders/saveAmount",
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${idToken}`,
-                    },
-                    body: JSON.stringify({
-                        orderId: paymentInfo.orderId,
-                        amount: amount.value,
-                    }),
-                }
-            );
+            const response = await fetch("/backend/orders/saveAmount", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({
+                    orderId: paymentInfo.orderId,
+                    amount: amount.value,
+                }),
+            });
 
             if (!response.ok) {
                 throw new Error("금액 저장 실패");
