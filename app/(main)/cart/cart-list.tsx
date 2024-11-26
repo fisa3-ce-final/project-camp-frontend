@@ -49,10 +49,10 @@ const CartList = ({ idToken }: { idToken: string }) => {
             });
 
             if (response.ok) {
-                const data: PendingOrder = await response.json();
-                if (data.orderStatus === "PENDING") {
+                const data: PendingOrder[] = await response.json();
+                if (data.length > 0 && data[0].orderStatus === "PENDING") {
                     // PENDING 주문이 있으면 /cart/order로 리디렉션
-                    router.push(`/cart/order/${data.id}`);
+                    router.push(`/cart/order/${data[0].id}`);
                     return;
                 }
             } else {
@@ -225,7 +225,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
         );
     }
 
-    if (!cartData) {
+    if (!cartData || cartData.cartItems.length === 0) {
         return (
             <div className="max-w-4xl mx-auto p-4">
                 <h1 className="text-2xl font-bold mb-6">장바구니 🛒</h1>

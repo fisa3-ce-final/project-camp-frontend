@@ -7,11 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Order } from "@/app/types/order-data";
 
-const CartOrderPage = ({ idToken }: { idToken: string }) => {
+const OrderDetailPage = ({ idToken }: { idToken: string }) => {
     const router = useRouter();
     const { id: orderId } = useParams();
     const [order, setOrder] = useState<Order | null>(null);
-    const [paymentMethod, setPaymentMethod] = useState<string>("원 페이");
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -84,11 +83,19 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
 
     return (
         <div className="max-w-6xl mx-auto p-8">
+            <Button
+                variant="outline"
+                onClick={() => router.back()}
+                className="mb-4"
+            >
+                ← 뒤로가기
+            </Button>
+
             <h1 className="text-3xl font-bold mb-6 text-center">
                 주문 내역 🛒
             </h1>
             <div className="flex flex-col gap-8 items-center md:flex-row md:items-start">
-                {/* 왼쪽 섹션: 배송 정보 및 결제 수단 */}
+                {/* 왼쪽 섹션: 배송 정보 */}
                 <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow">
                     <h2 className="text-2xl font-semibold mb-4">
                         배송 정보 📦
@@ -101,40 +108,6 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                         <strong>전화번호:</strong>{" "}
                         {order.phone || "등록된 전화번호가 없습니다."}
                     </p>
-                    <h2 className="text-2xl font-semibold mt-6 mb-4">
-                        결제 수단 💳
-                    </h2>
-                    <div className="flex items-center space-x-4">
-                        <input
-                            type="radio"
-                            id="wonpay"
-                            name="paymentMethod"
-                            value="원 페이"
-                            checked={paymentMethod === "원 페이"}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <label htmlFor="wonpay" className="text-sm font-medium">
-                            우리WON페이
-                        </label>
-                    </div>
-                    <div className="flex items-center space-x-4 mt-2">
-                        <input
-                            type="radio"
-                            id="tosspay"
-                            name="paymentMethod"
-                            value="토스페이"
-                            checked={paymentMethod === "토스페이"}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <label
-                            htmlFor="tosspay"
-                            className="text-sm font-medium"
-                        >
-                            토스페이
-                        </label>
-                    </div>
                 </div>
 
                 {/* 오른쪽 섹션: 결제 요약 */}
@@ -187,18 +160,22 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                                     {order.finalPrice.toLocaleString()} 원
                                 </span>
                             </div>
+                            <div className="flex justify-between mt-4">
+                                <span>대여 일수</span>
+                                <span>{order.rentalDays}일</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>주문 일시</span>
+                                <span>
+                                    {new Date(
+                                        order.createdAt
+                                    ).toLocaleDateString()}{" "}
+                                    {new Date(
+                                        order.createdAt
+                                    ).toLocaleTimeString()}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div className="mt-6">
-                        <Button
-                            className="w-full"
-                            onClick={() => {
-                                toast.success("결제가 완료되었습니다!");
-                                router.push("/cart");
-                            }}
-                        >
-                            결제 완료
-                        </Button>
                     </div>
                 </div>
             </div>
@@ -206,4 +183,4 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
     );
 };
 
-export default CartOrderPage;
+export default OrderDetailPage;

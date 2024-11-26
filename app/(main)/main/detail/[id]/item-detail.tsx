@@ -75,6 +75,13 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
     return (
         <div className="p-4 flex justify-center">
             <div className="w-full max-w-4xl bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
+                <Button
+                    variant="outline"
+                    onClick={() => router.back()}
+                    className="m-4"
+                >
+                    ← 뒤로가기
+                </Button>
                 <div className="flex flex-col gap-6 p-6">
                     <div className="w-full flex justify-center">
                         {image?.length > 0 ? (

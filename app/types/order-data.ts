@@ -21,16 +21,15 @@ export interface Order {
     updatedAt: string;
 }
 
-export interface Order {
-    rentalItemName: string;
-    category: string;
-    stock: number;
-    orderStatus: string;
+export interface OrderHistory {
+    orderId: number;
+    orderStatus: "PENDING" | "COMPLETED" | "CANCELLED";
+    totalAmount: number;
     orderDate: string;
 }
 
 export interface OrderPageData {
-    content: Order[];
+    content: OrderHistory[];
     pageable: {
         pageNumber: number;
         pageSize: number;

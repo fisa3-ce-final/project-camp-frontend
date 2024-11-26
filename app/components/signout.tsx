@@ -12,8 +12,7 @@ const Signout: FC<SignoutProps> = ({}) => {
             size={"lg"}
             onClick={() =>
                 signOut({
-                    callbackUrl:
-                        process.env.NEXT_PUBLIC_HOST + "/api/auth/logout",
+                    callbackUrl: "/api/auth/logout",
                 })
             }
         >
