@@ -1,16 +1,15 @@
-// components/CartList.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox"; // Re-added Checkbox import
+import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react"; // Removed Minus, Plus, Trash2 imports
+import { CalendarIcon } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -19,7 +18,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { CartPageData, PendingOrder } from "@/app/types/cart-data";
-import { format } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
 import { ko } from "date-fns/locale";
 import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,14 +27,14 @@ import { useRouter } from "next/navigation";
 
 const CartList = ({ idToken }: { idToken: string }) => {
     const [cartData, setCartData] = useState<CartPageData | null>(null);
-    const [selectedItems, setSelectedItems] = useState<number[]>([]); // Re-added selection state
+    const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [date, setDate] = useState<{ from: Date; to: Date }>({
         from: new Date(),
         to: new Date(new Date().setDate(new Date().getDate() + 3)),
     });
     const [selectedCoupon, setSelectedCoupon] = useState<string | null>(null);
-    const router = useRouter(); // useRouter 훅 초기화
-    const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const checkPendingOrder = async () => {
         try {
@@ -51,7 +50,6 @@ const CartList = ({ idToken }: { idToken: string }) => {
             if (response.ok) {
                 const data: PendingOrder[] = await response.json();
                 if (data.length > 0 && data[0].orderStatus === "PENDING") {
-                    // PENDING 주문이 있으면 /cart/order로 리디렉션
                     router.push(`/cart/order/${data[0].id}`);
                     return;
                 }
@@ -60,19 +58,16 @@ const CartList = ({ idToken }: { idToken: string }) => {
                     "Failed to fetch pending orders:",
                     response.statusText
                 );
-                // 필요에 따라 사용자에게 오류 메시지를 표시할 수 있습니다.
             }
         } catch (error: any) {
             console.error("Error fetching pending orders:", error);
             toast.error("주문 정보를 불러오는 데 실패했습니다.");
         }
 
-        // PENDING 주문이 없으면 장바구니 데이터 Fetch
         await fetchCartData();
         setIsLoading(false);
     };
 
-    // 데이터 Fetch
     const fetchCartData = async () => {
         try {
             const response = await fetch("/backend/cart-items", {
@@ -88,7 +83,6 @@ const CartList = ({ idToken }: { idToken: string }) => {
 
             const data: CartPageData = await response.json();
             setCartData(data);
-            // Set all items as selected by default (optional)
             setSelectedItems(data.cartItems.map((item) => item.id));
         } catch (error) {
             console.error("Error fetching cart data:", error);
@@ -99,7 +93,6 @@ const CartList = ({ idToken }: { idToken: string }) => {
         checkPendingOrder();
     }, [idToken, router]);
 
-    // Re-added handleSelectItem function
     const handleSelectItem = (id: number) => {
         setSelectedItems((prev) =>
             prev.includes(id)
@@ -107,22 +100,25 @@ const CartList = ({ idToken }: { idToken: string }) => {
                 : [...prev, id]
         );
     };
+
+    const getRentalDays = (): number => {
+        const { from, to } = date;
+        return differenceInCalendarDays(to, from) + 1;
+    };
+
     const calculateTotal = () => {
         if (!cartData) return 0;
 
-        return (
-            Math.floor(
-                selectedItems.reduce((total, id) => {
-                    const item = cartData.cartItems.find(
-                        (item) => item.id === id
-                    );
-                    return (
-                        total +
-                        (item?.rentalItem.price || 0) * (item?.quantity || 0)
-                    );
-                }, 0)
-            ) *
-            (date.to.getDate() + 1 - date.from.getDate())
+        const rentalDays = getRentalDays();
+
+        return Math.floor(
+            selectedItems.reduce((total, id) => {
+                const item = cartData.cartItems.find((item) => item.id === id);
+                return (
+                    total +
+                    (item?.rentalItem.price || 0) * (item?.quantity || 0)
+                );
+            }, 0) * rentalDays
         );
     };
 
@@ -135,25 +131,27 @@ const CartList = ({ idToken }: { idToken: string }) => {
 
         if (!coupon) return 0;
 
+        const rentalDays = getRentalDays();
+
         if (coupon.type === "FIXED_AMOUNT_DISCOUNT") {
-            return Math.floor(coupon.discount); // 고정 금액 할인
+            return Math.floor(coupon.discount);
         }
 
         if (coupon.type === "PERCENTAGE_DISCOUNT") {
-            return Math.floor((calculateTotal() * coupon.discount) / 100); // 퍼센트 할인
+            return Math.floor((calculateTotal() * coupon.discount) / 100);
         }
 
         return 0;
     };
+
     const calculateFinalTotal = () => {
         return Math.floor(calculateTotal() - calculateDiscount());
     };
 
-    // 대여 신청하기 버튼 클릭 핸들러
     const handleApplyRental = async () => {
         if (selectedItems.length === 0) {
             console.warn("선택된 장바구니 항목이 없습니다.");
-            toast.error("장바구니 항목을 선택해주세요."); // 오류 토스트 표시
+            toast.error("장바구니 항목을 선택해주세요.");
             return;
         }
 
@@ -192,24 +190,21 @@ const CartList = ({ idToken }: { idToken: string }) => {
 
             const result = await response.json();
             console.log("예약 성공:", result);
-            toast.success("대여 신청이 완료되었습니다!"); // 성공 토스트 표시
+            toast.success("대여 신청이 완료되었습니다!");
 
-            // 성공 시 /cart/order 페이지로 이동
             router.push(`/cart/order/${result.orderId}`);
         } catch (error: any) {
             console.error("예약 신청 오류:", error);
-            toast.error(`대여 신청에 실패했습니다: ${error.message}`); // 오류 토스트 표시
+            toast.error(`대여 신청에 실패했습니다: ${error.message}`);
         }
     };
 
     if (isLoading) {
         return (
             <div className="max-w-4xl mx-auto p-4">
-                {/* 로딩 중일 때 스켈레톤 또는 로딩 인디케이터 표시 */}
                 <Skeleton className="h-10 w-1/3 mb-6" />
 
                 <div className="grid md:grid-cols-3 gap-6">
-                    {/* 장바구니 항목 스켈레톤 */}
                     <div className="md:col-span-2 space-y-4">
                         {Array(3)
                             .fill(null)
@@ -221,7 +216,6 @@ const CartList = ({ idToken }: { idToken: string }) => {
                             ))}
                     </div>
 
-                    {/* 요약 정보 스켈레톤 */}
                     <div className="space-y-6">
                         <Skeleton className="h-40 w-full rounded-lg" />
                     </div>
@@ -285,11 +279,9 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                     </p>
                                     <p className="text-sm text-muted-foreground">
                                         수량: {item.quantity}
-                                    </p>{" "}
-                                    {/* Display quantity as read-only */}
+                                    </p>
                                 </div>
                             </div>
-                            {/* Removed quantity buttons and trash button */}
                         </div>
                     ))}
                 </div>
@@ -300,7 +292,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                         <div className="space-y-4">
                             <div>
                                 <label className="text-sm font-medium">
-                                    대여 기간 📅
+                                    대여 기간 📅 (총 {getRentalDays()}일)
                                 </label>
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -322,9 +314,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                                         {format(
                                                             date.to,
                                                             "PPP",
-                                                            {
-                                                                locale: ko,
-                                                            }
+                                                            { locale: ko }
                                                         )}
                                                     </>
                                                 ) : (
@@ -408,7 +398,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                     <Button
                         className="w-full"
                         size="lg"
-                        onClick={handleApplyRental} // 클릭 핸들러 연결
+                        onClick={handleApplyRental}
                     >
                         대여 신청하기 ✨
                     </Button>
