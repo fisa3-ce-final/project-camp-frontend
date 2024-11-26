@@ -38,7 +38,7 @@ const InventoryClient: FC<InventoryClientProps> = ({
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-store",
+                    cache: "no-cache",
                 }
             );
 
@@ -62,7 +62,7 @@ const InventoryClient: FC<InventoryClientProps> = ({
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-store",
+                    cache: "no-cache",
                 }
             );
 

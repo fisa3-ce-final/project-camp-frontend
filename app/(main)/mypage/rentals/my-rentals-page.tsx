@@ -40,7 +40,7 @@ const MyRentalsPage: FC<MyRentalsPageProps> = ({ idToken }) => {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-store",
+                    cache: "no-cache",
                 }
             );
 

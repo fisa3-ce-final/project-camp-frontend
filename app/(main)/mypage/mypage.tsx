@@ -75,7 +75,7 @@ export function MyPage({ userData }: MyPageProps) {
                     // 'Content-Type'을 설정하지 마세요. FormData는 자동으로 설정됩니다.
                 },
                 body: formData,
-                cache: "no-store",
+                cache: "no-cache",
             });
             if (response.ok) {
                 // 변경사항을 최종 저장
@@ -130,7 +130,7 @@ export function MyPage({ userData }: MyPageProps) {
                 headers: {
                     Authorization: `Bearer ${session?.user.id_token}`,
                 },
-                cache: "no-store",
+                cache: "no-cache",
             });
 
             if (response.ok) {

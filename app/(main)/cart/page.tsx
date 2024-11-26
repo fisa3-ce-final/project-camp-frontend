@@ -15,7 +15,7 @@ const CartPage: FC<CartPageProps> = async () => {
     //         "Content-Type": "application/json",
     //         Authorization: `Bearer ${session?.user.id_token}`,
     //     },
-    //     cache: "no-store",
+    //     cache: "no-cache",
     // });
 
     // const data: CartPageData = await response.json();

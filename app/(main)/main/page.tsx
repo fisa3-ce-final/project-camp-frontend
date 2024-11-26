@@ -51,7 +51,7 @@ const MainPage: FC<MainPageProps> = async ({ searchParams }) => {
     // 데이터 가져오기
     const response = await fetch(apiUrl, {
         method: "GET",
-        cache: "no-store",
+        cache: "no-cache",
         headers: {
             Authorization: `Bearer ${session.user.id_token}`,
         },

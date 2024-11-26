@@ -74,7 +74,7 @@ const RentalPage: FC<RentalPageProps> = ({
 
             const response = await fetch(url, {
                 method: "GET",
-                cache: "no-store",
+                cache: "no-cache",
                 headers: {
                     Authorization: `Bearer ${idToken}`,
                 },

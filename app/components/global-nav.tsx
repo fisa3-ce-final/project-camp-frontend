@@ -20,7 +20,7 @@ export function GlobalNav({ idToken }: { idToken: string }) {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-store",
+                    cache: "no-cache",
                 });
 
                 if (!response.ok) {
