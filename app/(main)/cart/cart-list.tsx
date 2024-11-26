@@ -110,14 +110,19 @@ const CartList = ({ idToken }: { idToken: string }) => {
     const calculateTotal = () => {
         if (!cartData) return 0;
 
-        return Math.floor(
-            selectedItems.reduce((total, id) => {
-                const item = cartData.cartItems.find((item) => item.id === id);
-                return (
-                    total +
-                    (item?.rentalItem.price || 0) * (item?.quantity || 0)
-                );
-            }, 0)
+        return (
+            Math.floor(
+                selectedItems.reduce((total, id) => {
+                    const item = cartData.cartItems.find(
+                        (item) => item.id === id
+                    );
+                    return (
+                        total +
+                        (item?.rentalItem.price || 0) * (item?.quantity || 0)
+                    );
+                }, 0)
+            ) *
+            (date.to.getDate() + 1 - date.from.getDate())
         );
     };
 

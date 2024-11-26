@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { categoryMapEngToKor } from "@/app/types/category-map";
 
 interface MyRentalsPageProps {
     idToken: string;
@@ -122,7 +123,7 @@ const MyRentalsPage: FC<MyRentalsPageProps> = ({ idToken }) => {
                         <CardHeader>
                             <CardTitle>{item.rentalItem} 🌟</CardTitle>
                             <CardDescription>
-                                카테고리: {item.category}
+                                카테고리: {categoryMapEngToKor[item.category]}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
