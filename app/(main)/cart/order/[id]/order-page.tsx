@@ -193,7 +193,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                         <Button
                             className="w-full"
                             onClick={() => {
-                                toast.success("결제가 완료되었습니다!");
+                                // toast.success("결제가 완료되었습니다!");
                                 router.push("/cart");
                             }}
                         >
