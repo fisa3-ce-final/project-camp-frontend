@@ -154,9 +154,14 @@ const CartList = ({ idToken }: { idToken: string }) => {
             toast.error("장바구니 항목을 선택해주세요.");
             return;
         }
-
-        const rentalDateISO = date.from.toISOString();
-        const returnDateISO = date.to.toISOString();
+        const rentalDateISO = new Date(
+            new Date(date.from.setHours(0, 0, 0, 0)).getTime() +
+                9 * 60 * 60 * 1000
+        ).toISOString();
+        const returnDateISO = new Date(
+            new Date(date.to.setHours(0, 0, 0, 0)).getTime() +
+                9 * 60 * 60 * 1000
+        ).toISOString();
 
         const payload: {
             cartItemIds: number[];
