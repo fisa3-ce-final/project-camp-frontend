@@ -99,13 +99,6 @@ const CheckoutPage = ({ idToken }) => {
                 return;
             }
 
-            if (paymentWidget) {
-                paymentWidget.destroy();
-            }
-            if (agreementWidget) {
-                agreementWidget.destroy();
-            }
-
             await widgets.setAmount(amount);
 
             const newPaymentWidget = await widgets.renderPaymentMethods({
@@ -123,6 +116,16 @@ const CheckoutPage = ({ idToken }) => {
         }
 
         renderPaymentWidgets();
+
+        return () => {
+            if (paymentWidget) {
+                console.log("destroying payment widget");
+                paymentWidget.destroy();
+            }
+            if (agreementWidget) {
+                agreementWidget.destroy();
+            }
+        };
     }, [widgets, amount]);
 
     const saveAmount = async () => {
@@ -157,8 +160,9 @@ const CheckoutPage = ({ idToken }) => {
                 <div id="payment-method" />
                 <div id="agreement" />
 
-                <div className="flex flex-row items-center w-full justify-center gap-5">
+                <div className="flex flex-col items-center w-full justify-center p-5 gap-5">
                     <Button
+                        className="w-full bg-blue-500 h-12"
                         disabled={!ready || !paymentInfo}
                         onClick={async () => {
                             try {
@@ -195,7 +199,7 @@ const CheckoutPage = ({ idToken }) => {
                         onClick={() => {
                             window.location.href = "/cart";
                         }}
-                        className="bg-red-500"
+                        className="bg-red-500 w-full  h-12"
                     >
                         취소하기
                     </Button>
