@@ -328,6 +328,25 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                             mode="range"
                                             selected={date}
                                             onSelect={(range) => {
+                                                if (range) {
+                                                    console.log(
+                                                        "from",
+                                                        range.from
+                                                    );
+                                                    console.log("to", range.to);
+                                                }
+
+                                                if (
+                                                    range &&
+                                                    range.from &&
+                                                    !range.to
+                                                ) {
+                                                    setDate({
+                                                        from: range.from,
+                                                        to: range.from,
+                                                    });
+                                                }
+
                                                 if (
                                                     range &&
                                                     range.from &&
@@ -340,6 +359,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                                 }
                                             }}
                                             locale={ko}
+                                            disabled={{ before: new Date() }}
                                         />
                                     </PopoverContent>
                                 </Popover>
