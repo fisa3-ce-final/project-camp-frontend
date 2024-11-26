@@ -87,7 +87,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
             <h1 className="text-3xl font-bold mb-6 text-center">
                 주문 내역 🛒
             </h1>
-            <div className="flex flex-col gap-8 items-center md:flex-row md:items-start">
+            <div className="flex flex-col gap-8 items-center md:flex-col md:items-center">
                 {/* 왼쪽 섹션: 배송 정보 및 결제 수단 */}
                 <div className="w-full md:w-1/2 bg-white p-6 rounded-lg shadow">
                     <h2 className="text-2xl font-semibold mb-4">
@@ -101,7 +101,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                         <strong>전화번호:</strong>{" "}
                         {order.phone || "등록된 전화번호가 없습니다."}
                     </p>
-                    <h2 className="text-2xl font-semibold mt-6 mb-4">
+                    {/* <h2 className="text-2xl font-semibold mt-6 mb-4">
                         결제 수단 💳
                     </h2>
                     <div className="flex items-center space-x-4">
@@ -134,7 +134,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                         >
                             토스페이
                         </label>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* 오른쪽 섹션: 결제 요약 */}
@@ -197,7 +197,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                                 router.push("/cart");
                             }}
                         >
-                            결제 완료
+                            결제 진행하기
                         </Button>
                     </div>
                 </div>
