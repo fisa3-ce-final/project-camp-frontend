@@ -28,7 +28,7 @@ async function refreshAccessToken(token: JWT) {
                     grant_type: "refresh_token",
                     refresh_token: token.refresh_token,
                 }),
-                cache: "no-store",
+                cache: "no-cache",
             }
         );
 

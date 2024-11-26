@@ -43,7 +43,7 @@ export default function CommunityTabsPage() {
                 {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
-                    cache: "no-store",
+                    cache: "no-cache",
                 }
             );
             const data = await res.json();

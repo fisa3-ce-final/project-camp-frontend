@@ -11,7 +11,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
     const router = useRouter();
     const { id: orderId } = useParams();
     const [order, setOrder] = useState<Order | null>(null);
-    const [paymentMethod, setPaymentMethod] = useState<string>("원 페이");
+    // const [paymentMethod, setPaymentMethod] = useState<string>("원 페이");
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -29,11 +29,12 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-store",
+                    cache: "no-cache",
                 });
 
                 if (response.ok) {
-                    const data: Order = await response.json();
+                    let data: Order = {} as Order;
+                    data = await response.json();
                     setOrder(data);
                 } else if (response.status === 404) {
                     toast.info("해당 주문을 찾을 수 없습니다.");
@@ -178,7 +179,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                             <div className="flex justify-between mb-2 text-primary">
                                 <span>할인 금액</span>
                                 <span>
-                                    -{order.discountAmount.toLocaleString()} 원
+                                    -{order.discountAmount?.toLocaleString()} 원
                                 </span>
                             </div>
                             <div className="flex justify-between font-bold text-lg">
@@ -194,7 +195,7 @@ const CartOrderPage = ({ idToken }: { idToken: string }) => {
                             className="w-full"
                             onClick={() => {
                                 // toast.success("결제가 완료되었습니다!");
-                                router.push("/cart");
+                                router.push("/cart/order/checkout");
                             }}
                         >
                             결제 진행하기

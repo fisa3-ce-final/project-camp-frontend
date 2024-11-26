@@ -28,11 +28,12 @@ const OrderDetailPage = ({ idToken }: { idToken: string }) => {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
-                    cache: "no-store",
+                    cache: "no-cache",
                 });
 
                 if (response.ok) {
-                    const data: Order = await response.json();
+                    let data: Order = {} as Order;
+                    data = await response.json();
                     setOrder(data);
                 } else if (response.status === 404) {
                     toast.info("해당 주문을 찾을 수 없습니다.");
@@ -151,7 +152,7 @@ const OrderDetailPage = ({ idToken }: { idToken: string }) => {
                             <div className="flex justify-between mb-2 text-primary">
                                 <span>할인 금액</span>
                                 <span>
-                                    -{order.discountAmount.toLocaleString()} 원
+                                    -{order.discountAmount?.toLocaleString()} 원
                                 </span>
                             </div>
                             <div className="flex justify-between font-bold text-lg">

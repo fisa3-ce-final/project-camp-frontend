@@ -45,7 +45,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${idToken}`,
                 },
-                cache: "no-store",
+                cache: "no-cache",
             });
 
             if (response.ok) {
@@ -81,7 +81,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${idToken}`,
                 },
-                cache: "no-store",
+                cache: "no-cache",
             });
 
             if (!response.ok) throw new Error("Failed to fetch cart data");

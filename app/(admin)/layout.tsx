@@ -84,7 +84,7 @@ const dropdownItems = [
 //             "Content-Type": "application/json",
 //             Authorization: `Bearer ${data?.user.id_token}`,
 //         },
-//         cache: "no-store",
+//         cache: "no-cache",
 //     });
 
 //     if (!res.ok) {

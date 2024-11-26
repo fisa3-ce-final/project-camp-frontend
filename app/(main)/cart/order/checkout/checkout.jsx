@@ -2,6 +2,8 @@
 import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
 
 const CheckoutPage = ({ idToken }) => {
@@ -18,23 +20,23 @@ const CheckoutPage = ({ idToken }) => {
         async function fetchInitialData() {
             try {
                 // UUID 가져오기
-                const uuidResponse = await fetch("http://localhost:8080/user/uuid", {
+                const uuidResponse = await fetch("/backend/user/uuid", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${idToken}`,
                     },
                 });
-                
+
                 if (!uuidResponse.ok) {
                     throw new Error("UUID 요청 실패");
                 }
-                
+
                 const { uuid } = await uuidResponse.json();
                 setCustomerKey(uuid);
 
                 // 주문 금액 가져오기
-                const amountResponse = await fetch("http://localhost:8080/orders/amount", {
+                const amountResponse = await fetch("/backend/orders/amount", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -47,19 +49,23 @@ const CheckoutPage = ({ idToken }) => {
                 }
 
                 const amountData = await amountResponse.json();
-                setAmount(prev => ({
+                setAmount((prev) => ({
                     ...prev,
-                    value: parseInt(amountData)
+                    value: parseInt(amountData),
                 }));
 
                 // 주문 정보 가져오기
-                const paymentInfoResponse = await fetch("http://localhost:8080/orders/paymentInfo", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${idToken}`,
-                    },
-                });
+                const paymentInfoResponse = await fetch(
+                    "/backend/orders/paymentInfo",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${idToken}`,
+                        },
+                        cache: "no-cache",
+                    }
+                );
 
                 if (!paymentInfoResponse.ok) {
                     throw new Error("주문 정보 요청 실패");
@@ -74,7 +80,6 @@ const CheckoutPage = ({ idToken }) => {
                     customerKey: uuid,
                 });
                 setWidgets(widgets);
-
             } catch (error) {
                 console.error("초기 데이터 로딩 에러:", error);
             }
@@ -88,6 +93,10 @@ const CheckoutPage = ({ idToken }) => {
             if (widgets == null) {
                 return;
             }
+            if (amount.value === 0) {
+                return;
+            }
+
             await widgets.setAmount(amount);
 
             await Promise.all([
@@ -109,18 +118,21 @@ const CheckoutPage = ({ idToken }) => {
 
     const saveAmount = async () => {
         try {
-            const response = await fetch("http://localhost:8080/orders/saveAmount", {
-                method: "POST",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${idToken}`,
-                },
-                body: JSON.stringify({
-                    orderId: paymentInfo.orderId,
-                    amount: amount.value
-                })
-            });
+            const response = await fetch(
+                "http://localhost:8080/orders/saveAmount",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({
+                        orderId: paymentInfo.orderId,
+                        amount: amount.value,
+                    }),
+                }
+            );
 
             if (!response.ok) {
                 throw new Error("금액 저장 실패");
@@ -139,35 +151,49 @@ const CheckoutPage = ({ idToken }) => {
                 <div id="payment-method" />
                 <div id="agreement" />
 
-                <button
-                    className="button"
-                    disabled={!ready || !paymentInfo}
-                    onClick={async () => {
-                        try {
-                            console.log(customerKey);
-                            // 결제 요청 전 금액 저장
-                            const saveSuccess = await saveAmount();
-                            if (!saveSuccess) {
-                                alert("결제 정보 저장에 실패했습니다.");
-                                return;
-                            }
+                <div className="flex flex-row items-center w-full justify-center gap-5">
+                    <Button
+                        disabled={!ready || !paymentInfo}
+                        onClick={async () => {
+                            try {
+                                console.log(customerKey);
+                                // 결제 요청 전 금액 저장
+                                const saveSuccess = await saveAmount();
+                                if (!saveSuccess) {
+                                    alert("결제 정보 저장에 실패했습니다.");
+                                    return;
+                                }
 
-                            await widgets.requestPayment({
-                                orderId: paymentInfo.orderId.toString(),
-                                orderName: paymentInfo.orderName,
-                                successUrl: window.location.origin + "/orders/success",
-                                failUrl: window.location.origin + "/fail.html",
-                                customerEmail: paymentInfo.customerEmail,
-                                customerName: paymentInfo.customerName,
-                                customerMobilePhone: paymentInfo.customerMobilePhone,
-                            });
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    }}
-                >
-                    결제하기
-                </button>
+                                await widgets.requestPayment({
+                                    orderId: paymentInfo.orderId.toString(),
+                                    orderName: paymentInfo.orderName,
+                                    successUrl:
+                                        window.location.origin +
+                                        "/cart/order/success",
+                                    failUrl:
+                                        window.location.origin +
+                                        "/cart/order/fail",
+                                    customerEmail: paymentInfo.customerEmail,
+                                    customerName: paymentInfo.customerName,
+                                    customerMobilePhone:
+                                        paymentInfo.customerMobilePhone,
+                                });
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        }}
+                    >
+                        결제하기
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            window.location.href = "/cart";
+                        }}
+                        className="bg-red-500"
+                    >
+                        취소하기
+                    </Button>
+                </div>
             </div>
         </div>
     );
