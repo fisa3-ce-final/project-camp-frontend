@@ -359,6 +359,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                                 }
                                             }}
                                             locale={ko}
+                                            disabled={{ before: new Date() }}
                                         />
                                     </PopoverContent>
                                 </Popover>
