@@ -1,6 +1,7 @@
 import { Pageable } from "./pageable";
 
 export interface RentalItem {
+    rentalItemId: number;
     rentalItem: string;
     category: string;
     quantity: number;

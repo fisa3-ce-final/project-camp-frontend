@@ -22,6 +22,7 @@ import {
     Package,
     Calendar,
     AlertCircle,
+    Star,
 } from "lucide-react";
 
 async function fetchRentalData(
@@ -51,6 +52,10 @@ export default function MyRentalsPage() {
     const [currentPage, setCurrentPage] = useState(0);
     const { data: session } = useSession();
     const router = useRouter();
+
+    const [selectedRating, setSelectedRating] = useState<number | null>(null);
+    const [currentItem, setCurrentItem] = useState<number | null>(null);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const loadRentalData = async () => {
@@ -93,10 +98,108 @@ export default function MyRentalsPage() {
             </div>
         );
     }
+    const handleOpenModal = (itemId: number) => {
+        setCurrentItem(itemId);
+        setShowModal(true);
+    };
+    const handleSubmitReview = async () => {
+        if (!currentItem || selectedRating === null) return;
+        setLoading(true);
+        setError(null);
 
+        try {
+            await submitReview(currentItem, selectedRating);
+            setShowModal(false);
+            setSelectedRating(null);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "알 수 없는 오류");
+        } finally {
+            setLoading(false);
+        }
+    };
+    // 새로운 리뷰 제출 API 함수
+    async function submitReview(itemId: number, rating: number) {
+        const response = await fetch(
+            `/backend/rental-items/review/${itemId}?ratingAvg=${rating}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (!response.ok) throw new Error("리뷰 제출에 실패했습니다.");
+        return response.text();
+    }
     return (
         <div className="flex justify-center h-full bg-gray-100  min-h-screen">
             <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10">
+                {/* 모달 */}
+                <AnimatePresence>
+                    {showModal && (
+                        <motion.div
+                            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <motion.div
+                                className="bg-white p-6 rounded-lg shadow-lg w-96"
+                                initial={{ y: 50 }}
+                                animate={{ y: 0 }}
+                                exit={{ y: 50 }}
+                            >
+                                <h2 className="text-lg font-bold mb-4">
+                                    ⭐ 리뷰 남기기
+                                </h2>
+                                <div className="flex justify-center mb-4">
+                                    {[1, 2, 3, 4, 5].map((rating) => (
+                                        <motion.button
+                                            key={rating}
+                                            whileHover={{ scale: 1.2 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            className={`mx-1 ${
+                                                selectedRating &&
+                                                selectedRating >= rating
+                                                    ? "text-yellow-500"
+                                                    : "text-gray-300"
+                                            }`}
+                                            onClick={() =>
+                                                setSelectedRating(rating)
+                                            }
+                                        >
+                                            <Star className="h-8 w-8" />
+                                        </motion.button>
+                                    ))}
+                                </div>
+                                {error && (
+                                    <div className="text-red-500 text-sm flex items-center">
+                                        <AlertCircle className="h-4 w-4 mr-1" />
+                                        {error}
+                                    </div>
+                                )}
+                                <div className="flex justify-end space-x-2">
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setShowModal(false)}
+                                    >
+                                        취소
+                                    </Button>
+                                    <Button
+                                        onClick={handleSubmitReview}
+                                        disabled={
+                                            loading || selectedRating === null
+                                        }
+                                    >
+                                        {loading ? "제출 중..." : "제출"}
+                                    </Button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -219,6 +322,16 @@ export default function MyRentalsPage() {
                                                             ).toLocaleDateString()}
                                                         </span>
                                                     </div>
+
+                                                    <Button
+                                                        onClick={() =>
+                                                            handleOpenModal(
+                                                                item.rentalItemId
+                                                            )
+                                                        }
+                                                    >
+                                                        리뷰 남기기
+                                                    </Button>
                                                 </div>
                                             </CardContent>
                                         </Card>
