@@ -24,6 +24,7 @@ import {
     AlertCircle,
     Star,
 } from "lucide-react";
+import { toast } from "sonner";
 
 async function fetchRentalData(
     page: number,
@@ -130,6 +131,8 @@ export default function MyRentalsPage() {
         );
 
         if (!response.ok) throw new Error("리뷰 제출에 실패했습니다.");
+
+        toast.success("리뷰가 성공적으로 제출되었습니다.");
         return response.text();
     }
     return (
