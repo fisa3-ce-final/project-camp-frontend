@@ -101,7 +101,6 @@ export function MyPage() {
         }
         setIsEditing(!isEditing);
     };
-
     const handleSave = async () => {
         if (!session?.user?.id_token || !tempUserData) return;
         try {
@@ -118,6 +117,17 @@ export function MyPage() {
                 formData
             );
             setUserData(updatedData);
+
+            // Ensure the new image URL is reflected immediately
+            if (avatarFile && updatedData.imageUrl) {
+                setUserData((prev) => ({
+                    ...prev!,
+                    imageUrl: `${
+                        updatedData.imageUrl
+                    }?t=${new Date().getTime()}`, // Cache-busting query
+                }));
+            }
+
             setIsEditing(false);
             toast.success("프로필이 성공적으로 업데이트되었습니다.");
         } catch (error) {
@@ -186,9 +196,14 @@ export function MyPage() {
                     <div className="relative inline-block">
                         <Avatar className="w-32 h-32 mx-auto mb-4">
                             <AvatarImage
-                                src={userData.imageUrl}
+                                src={
+                                    avatarFile
+                                        ? URL.createObjectURL(avatarFile)
+                                        : userData.imageUrl
+                                }
                                 alt="프로필 이미지"
                             />
+
                             <AvatarFallback>
                                 <User className="w-12 h-12 text-gray-400" />
                             </AvatarFallback>
