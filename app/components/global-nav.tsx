@@ -88,14 +88,10 @@ export function GlobalNav({ idToken }: { idToken: string }) {
                 >
                     <ShoppingCart className="w-6 h-6" />
                     <span>
-                        장바구니{!cartQuantity ? "()" : `(${cartQuantity})`}
+                        장바구니{!cartQuantity ? "(0)" : `(${cartQuantity})`}
                     </span>
                     {/* Optionally, display error message */}
-                    {error && (
-                        <span className="absolute top-0 right-0 text-xs text-red-500">
-                            (!)
-                        </span>
-                    )}
+                    {/* {error && <span>(!)</span>} */}
                 </Link>
                 <Link
                     href="/mypage"

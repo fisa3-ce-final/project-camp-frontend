@@ -1,10 +1,12 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getQueryClient } from "@/app/lib/get-query-client";
 
 export default function SuccessComponent({ idToken }) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const queryClient = getQueryClient();
 
     useEffect(() => {
         // 1. URL에서 결제 정보 파라미터 추출
@@ -42,6 +44,13 @@ export default function SuccessComponent({ idToken }) {
         if (searchParams.get("orderId")) {
             confirm();
         }
+        //2초 후에 메인 페이지로 이동
+        setTimeout(() => {
+            queryClient.invalidateQueries({
+                queryKey: ["cartQuantity"],
+            });
+            router.push("/main");
+        }, 2000);
     }, [searchParams, router, idToken]); // 의존성 배열: 이 값들이 변경될 때마다 useEffect 실행
 
     // 7. 결제 성공 UI 렌더링
