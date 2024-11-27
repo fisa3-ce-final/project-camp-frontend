@@ -5,6 +5,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import AuthProvider from "./lib/auth-provider";
 import { ReactQueryProviders } from "./lib/react-query-providers";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
             <body className={inter.className}>
                 <ReactQueryProviders>
                     <AuthProvider>{children}</AuthProvider>
+                    <ReactQueryDevtools initialIsOpen={false} />
                 </ReactQueryProviders>
                 <Toaster />
             </body>

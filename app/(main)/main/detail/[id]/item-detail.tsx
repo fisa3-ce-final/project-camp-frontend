@@ -15,6 +15,7 @@ import { RentalItemDetail } from "@/app/types/rental-item";
 import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import { getQueryClient } from "@/app/lib/get-query-client";
 
 interface ItemDetailProps {
     itemDetail: RentalItemDetail;
@@ -38,6 +39,7 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
 
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const queryClient = getQueryClient();
 
     const handleRentButtonClick = async () => {
         try {
@@ -54,6 +56,9 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
 
             if (response.ok) {
                 toast.success("장바구니에 담기를 성공하였습니다!");
+                queryClient.invalidateQueries({
+                    queryKey: ["cartQuantity"],
+                });
                 router.push("/main");
             } else {
                 const errorText = await response.text();
