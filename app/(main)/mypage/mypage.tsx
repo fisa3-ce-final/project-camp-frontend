@@ -158,7 +158,7 @@ export function MyPage() {
 
     if (!userData) {
         return (
-            <div className="flex justify-center h-full bg-gray-100">
+            <div className="flex justify-center h-full bg-gray-100  py-12">
                 <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10">
                     <Skeleton className="h-32 w-32 rounded-full mx-auto" />
                     <Skeleton className="h-8 w-3/4 mx-auto" />
@@ -227,11 +227,6 @@ export function MyPage() {
                             </label>
                         )}
                     </div>
-                    {userData.role === "ADMIN" && (
-                        <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
-                            관리자
-                        </span>
-                    )}
                     <AnimatePresence mode="wait">
                         {isEditing ? (
                             <motion.div
@@ -240,6 +235,11 @@ export function MyPage() {
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                             >
+                                {userData.role === "ADMIN" && (
+                                    <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
+                                        관리자
+                                    </span>
+                                )}
                                 <Input
                                     type="text"
                                     value={tempUserData?.nickname}
@@ -258,8 +258,13 @@ export function MyPage() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="text-2xl font-bold mt-2"
+                                className="text-2xl font-bold mt-2 flex items-center justify-center gap-3"
                             >
+                                {userData.role === "ADMIN" && (
+                                    <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
+                                        관리자
+                                    </span>
+                                )}
                                 {userData.nickname}
                             </motion.h2>
                         )}
@@ -363,7 +368,6 @@ export function MyPage() {
                 )}
 
                 <div className="flex justify-between">
-                    <Signout />
                     <Button
                         variant="destructive"
                         onClick={handleDeleteAccount}
@@ -373,6 +377,7 @@ export function MyPage() {
                         <AlertTriangle className="mr-2" />
                         {isDeleting ? "삭제 중..." : "계정 삭제"}
                     </Button>
+                    <Signout />
                 </div>
             </motion.div>
         </div>
