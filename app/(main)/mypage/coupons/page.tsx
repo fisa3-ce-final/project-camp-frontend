@@ -10,7 +10,7 @@ const MypageCouponsPage: FC<MypageCouponsPageProps> = async ({}) => {
 
     return (
         <div>
-            <MypageCoupons idToken={session?.user.id_token!} />
+            <MypageCoupons />
         </div>
     );
 };
