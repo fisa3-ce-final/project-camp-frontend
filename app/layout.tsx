@@ -4,6 +4,8 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import AuthProvider from "./lib/auth-provider";
+import { ReactQueryProviders } from "./lib/react-query-providers";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +22,10 @@ export default function RootLayout({
     return (
         <html lang="ko" suppressHydrationWarning={true}>
             <body className={inter.className}>
-                <AuthProvider>{children}</AuthProvider>
+                <ReactQueryProviders>
+                    <AuthProvider>{children}</AuthProvider>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </ReactQueryProviders>
                 <Toaster />
             </body>
         </html>

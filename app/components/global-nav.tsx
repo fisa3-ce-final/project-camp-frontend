@@ -6,39 +6,35 @@ import Link from "next/link";
 import { Home, MessageSquare, Bell, User, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Signout from "./signout";
+import { useQuery } from "@tanstack/react-query";
+
+async function fetchCartQuantity(idToken: string): Promise<number> {
+    const response = await fetch("/backend/cart-items/quantity", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+        },
+        cache: "no-cache",
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+}
 
 export function GlobalNav({ idToken }: { idToken: string }) {
-    const [cartQuantity, setCartQuantity] = useState<number | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchCartQuantity = async () => {
-            try {
-                const response = await fetch("/backend/cart-items/quantity", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${idToken}`,
-                    },
-                    cache: "no-cache",
-                });
-
-                if (!response.ok) {
-                    throw new Error(
-                        `Error: ${response.status} ${response.statusText}`
-                    );
-                }
-
-                const data: number = await response.json();
-                setCartQuantity(data);
-            } catch (err: any) {
-                console.error("Failed to fetch cart quantity:", err);
-                setError("장바구니 정보를 불러올 수 없습니다.");
-            }
-        };
-
-        fetchCartQuantity();
-    }, []);
+    const {
+        data: cartQuantity,
+        error,
+        isError,
+        isLoading,
+    } = useQuery({
+        queryKey: ["cartQuantity"],
+        queryFn: () => fetchCartQuantity(idToken),
+    });
 
     return (
         <nav className="bg-gray-100 border-t border-gray-200 md:border-t-0 md:border-b p-4 flex justify-between items-center md:justify-center relative">
@@ -92,14 +88,10 @@ export function GlobalNav({ idToken }: { idToken: string }) {
                 >
                     <ShoppingCart className="w-6 h-6" />
                     <span>
-                        장바구니{cartQuantity !== null && `(${cartQuantity})`}
+                        장바구니{!cartQuantity ? "(0)" : `(${cartQuantity})`}
                     </span>
                     {/* Optionally, display error message */}
-                    {error && (
-                        <span className="absolute top-0 right-0 text-xs text-red-500">
-                            (!)
-                        </span>
-                    )}
+                    {/* {error && <span>(!)</span>} */}
                 </Link>
                 <Link
                     href="/mypage"

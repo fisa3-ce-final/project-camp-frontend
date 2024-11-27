@@ -4,7 +4,7 @@ export interface RentalItem {
     rentalItem: string;
     category: string;
     quantity: number;
-    orderStatus: "PENDING" | "AVAILABLE";
+    orderStatus: "COMPLETED" | "PENDING" | "AVAILABLE";
     rentalDate: string;
     returnDate: string;
 }

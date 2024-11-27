@@ -1,186 +1,162 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Pencil } from "lucide-react";
-import Signout from "@/app/components/signout";
-import { UserGetResponse } from "@/app/types/user-get-response";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import {
+    Pencil,
+    User,
+    Mail,
+    Phone,
+    MapPin,
+    Gift,
+    ShoppingBag,
+    Package,
+    Upload,
+    LogOut,
+    AlertTriangle,
+} from "lucide-react";
+import Signout from "@/app/components/signout";
 
-interface MyPageProps {
-    userData: UserGetResponse | null;
+interface UserData {
+    nickname: string;
+    email: string;
+    phone: string;
+    address: string;
+    imageUrl: string;
+    role: string;
 }
 
-export function MyPage({ userData }: MyPageProps) {
+const fetchUserData = async (token: string): Promise<UserData> => {
+    const response = await fetch("/backend/user", {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Failed to fetch user data");
+    return response.json();
+};
+
+const updateUserData = async (
+    token: string,
+    formData: FormData
+): Promise<UserData> => {
+    const response = await fetch("/backend/user", {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+    });
+    if (!response.ok) throw new Error("Failed to update user data");
+    return response.json();
+};
+
+const deleteAccount = async (token: string): Promise<void> => {
+    const response = await fetch("/backend/user", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Failed to delete account");
+};
+
+export function MyPage() {
+    const [userData, setUserData] = useState<UserData | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [nickname, setNickname] = useState(userData?.nickname ?? "");
-    const [phone, setPhone] = useState(userData?.phone ?? "");
-    const [address, setAddress] = useState(userData?.address ?? "");
-    const [avatar, setAvatar] = useState(userData?.imageUrl ?? "");
-    const { data: session } = useSession() as { data: Session };
-
-    // 임시 상태 (수정 모드 중에 변경사항을 임시로 저장)
-    const [tempNickname, setTempNickname] = useState(nickname);
-    const [tempPhone, setTempPhone] = useState(phone);
-    const [tempAddress, setTempAddress] = useState(address);
-    const [avatarFile, setAvatarFile] = useState<File | null>(null); // 이미지 파일 상태
-    const [isDeleting, setIsDeleting] = useState(false); // 삭제 상태
-
+    const [tempUserData, setTempUserData] = useState<UserData | null>(null);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const { data: session } = useSession();
     const router = useRouter();
+
+    useEffect(() => {
+        if (session?.user?.id_token) {
+            loadUserData();
+        }
+    }, [session]);
+
+    const loadUserData = async () => {
+        if (!session?.user?.id_token) return;
+        try {
+            const data = await fetchUserData(session.user.id_token);
+            setUserData(data);
+            setTempUserData(data);
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            toast.error("사용자 정보를 불러오는데 실패했습니다.");
+        }
+    };
 
     const handleEditToggle = () => {
         if (isEditing) {
-            // 수정 모드를 종료하고 저장할 경우
             handleSave();
         } else {
-            // 수정 모드 진입 시 현재 상태를 임시 저장 상태로 설정
-            setTempNickname(nickname);
-            setTempPhone(phone);
-            setTempAddress(address);
-            setAvatarFile(null); // 기존 파일 초기화
+            setTempUserData(userData);
+            setAvatarFile(null);
         }
-        setIsEditing((prev) => !prev);
-    };
-
-    const handleCancelEdit = () => {
-        // 원래 값으로 되돌리고 편집 모드 종료
-        setTempNickname(nickname);
-        setTempPhone(phone);
-        setTempAddress(address);
-        setAvatarFile(null); // 파일 초기화
-        setIsEditing(false);
+        setIsEditing(!isEditing);
     };
 
     const handleSave = async () => {
+        if (!session?.user?.id_token || !tempUserData) return;
         try {
             const formData = new FormData();
-            formData.append("nickname", tempNickname);
-            formData.append("phone", tempPhone);
-            formData.append("address", tempAddress);
+            formData.append("nickname", tempUserData.nickname);
+            formData.append("phone", tempUserData.phone);
+            formData.append("address", tempUserData.address);
             if (avatarFile) {
-                formData.append("imageFile", avatarFile); // 이미지 파일 추가
+                formData.append("imageFile", avatarFile);
             }
 
-            const response = await fetch(`/backend/user`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${session?.user.id_token}`,
-                    // 'Content-Type'을 설정하지 마세요. FormData는 자동으로 설정됩니다.
-                },
-                body: formData,
-                cache: "no-cache",
-            });
-            if (response.ok) {
-                // 변경사항을 최종 저장
-                setNickname(tempNickname);
-                setPhone(tempPhone);
-                setAddress(tempAddress);
-                if (avatarFile) {
-                    // 서버에서 반환된 새로운 이미지 URL을 사용하도록 수정 필요
-                    const data = await response.json();
-                    setAvatar(data.imageUrl || avatar); // 서버 응답에 따라 조정
-                }
-                setAvatarFile(null);
-                setIsEditing(false);
-            } else {
-                console.error("Failed to save changes");
-            }
+            const updatedData = await updateUserData(
+                session.user.id_token,
+                formData
+            );
+            setUserData(updatedData);
+            setIsEditing(false);
+            toast.success("프로필이 성공적으로 업데이트되었습니다.");
         } catch (error) {
-            console.error("Error saving changes:", error);
-        }
-    };
-
-    const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTempNickname(e.target.value);
-    };
-
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTempPhone(e.target.value);
-    };
-
-    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTempAddress(e.target.value);
-    };
-
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setAvatarFile(file); // 선택한 파일을 상태에 저장
-            setAvatar(URL.createObjectURL(file)); // 미리보기용 URL 설정
+            console.error("Error updating user data:", error);
+            toast.error("프로필 업데이트에 실패했습니다.");
         }
     };
 
     const handleDeleteAccount = async () => {
+        if (!session?.user?.id_token) return;
         const confirmed = window.confirm(
-            "정말 계정을 삭제하시겠습니까? 되돌릴 수 없습니다."
+            "정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
         );
         if (!confirmed) return;
 
         setIsDeleting(true);
         try {
-            const response = await fetch(`/backend/user`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${session?.user.id_token}`,
-                },
-                cache: "no-cache",
-            });
-
-            if (response.ok) {
-                alert("계정이 성공적으로 삭제되었습니다.");
-                router.push("/logout"); // 추가된 부분: /logout 페이지로 이동
-            } else {
-                const errorData = await response.json();
-                console.error("Failed to delete account:", errorData);
-                alert("계정 삭제에 실패했습니다. 나중에 다시 시도해주세요.");
-            }
+            await deleteAccount(session.user.id_token);
+            toast.success("계정이 성공적으로 삭제되었습니다.");
+            router.push("/logout");
         } catch (error) {
             console.error("Error deleting account:", error);
-            alert("계정 삭제 중 오류가 발생했습니다.");
+            toast.error("계정 삭제에 실패했습니다.");
         } finally {
             setIsDeleting(false);
         }
     };
 
-    const handleCouponMoreClick = () => {
-        router.push("/mypage/coupons");
-    };
-    const handleOrderHistoryClick = () => {
-        router.push("/mypage/orders");
-    };
-    const handleRentMoreClick = () => {
-        router.push("/mypage/rentals");
-    };
-    const handleLendMoreClick = () => {
-        router.push("/mypage/items");
-    };
-
     if (!userData) {
         return (
-            <div className="flex justify-center h-[2000px] bg-gray-100 p-8">
-                <div className="w-full max-w-3xl space-y-8">
-                    <div className="flex items-center space-x-4">
-                        <Skeleton className="w-32 h-32 rounded-full" />
-                        <div className="flex-1 space-y-4 py-1">
-                            <Skeleton className="h-6 w-3/4" />
-                            <Skeleton className="h-6 w-1/2" />
-                        </div>
-                    </div>
-                    <Skeleton className="h-6 w-1/3 mt-6" />
-                    <Skeleton className="h-6 w-2/3 mt-6" />
-                    <Skeleton className="h-6 w-1/2 mt-6" />
-                    <Skeleton className="h-6 w-1/4 mt-6" />
-                    <div className="flex justify-between mt-6">
-                        <Skeleton className="h-10 w-24" />
-                        <Skeleton className="h-10 w-24" />
-                        <Skeleton className="h-10 w-24" />
+            <div className="flex justify-center h-full bg-gray-100">
+                <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10">
+                    <Skeleton className="h-32 w-32 rounded-full mx-auto" />
+                    <Skeleton className="h-8 w-3/4 mx-auto" />
+                    <Skeleton className="h-6 w-1/2 mx-auto" />
+                    <div className="space-y-4">
+                        {[...Array(4)].map((_, i) => (
+                            <Skeleton key={i} className="h-12 w-full" />
+                        ))}
                     </div>
                 </div>
             </div>
@@ -188,25 +164,33 @@ export function MyPage({ userData }: MyPageProps) {
     }
 
     return (
-        <div className="flex justify-center h-full bg-gray-100">
-            <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10">
-                {/* 내 정보 섹션 */}
-                <section className="flex items-center justify-between space-x-6">
-                    <div className="relative">
-                        <Avatar className="w-32 h-32 rounded-full bg-gray-300 shrink-0">
+        <div className="flex justify-center min-h-screen bg-gray-100 py-12">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10"
+            >
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold">마이 페이지</h1>
+                    <Button
+                        variant={isEditing ? "default" : "outline"}
+                        onClick={handleEditToggle}
+                        className="px-6 py-2 text-lg"
+                    >
+                        {isEditing ? "저장" : "프로필 수정"}
+                    </Button>
+                </div>
+
+                <motion.section className="text-center">
+                    <div className="relative inline-block">
+                        <Avatar className="w-32 h-32 mx-auto mb-4">
                             <AvatarImage
-                                src={avatar || undefined}
-                                alt="아바타"
-                                className="w-32 h-32 object-cover rounded-full"
+                                src={userData.imageUrl}
+                                alt="프로필 이미지"
                             />
-                            <AvatarFallback className="w-32 h-32 flex items-center justify-center text-2xl font-bold text-white bg-gray-400 rounded-full">
-                                <Image
-                                    src="/logo-img.png"
-                                    alt="아바타"
-                                    width={128}
-                                    height={128}
-                                    className="w-32 h-32 object-cover rounded-full"
-                                />
+                            <AvatarFallback>
+                                <User className="w-12 h-12 text-gray-400" />
                             </AvatarFallback>
                         </Avatar>
                         {isEditing && (
@@ -214,174 +198,168 @@ export function MyPage({ userData }: MyPageProps) {
                                 htmlFor="avatar-upload"
                                 className="absolute bottom-0 right-0 bg-white rounded-full p-2 cursor-pointer shadow-md"
                             >
-                                <Pencil className="w-4 h-4 text-gray-600" />
+                                <Upload className="w-4 h-4 text-gray-600" />
                                 <input
                                     type="file"
                                     id="avatar-upload"
                                     accept="image/*"
                                     className="hidden"
-                                    onChange={handleAvatarChange}
+                                    onChange={(e) =>
+                                        e.target.files &&
+                                        setAvatarFile(e.target.files[0])
+                                    }
                                 />
                             </label>
                         )}
                     </div>
-                    <div className="flex-1 space-y-2">
-                        {/* 관리자 뱃지 */}
-                        {userData.role === "ADMIN" && (
-                            <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
-                                관리자
-                            </span>
+                    {userData.role === "ADMIN" && (
+                        <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
+                            관리자
+                        </span>
+                    )}
+                    <AnimatePresence mode="wait">
+                        {isEditing ? (
+                            <motion.div
+                                key="editing"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                            >
+                                <Input
+                                    type="text"
+                                    value={tempUserData?.nickname}
+                                    onChange={(e) =>
+                                        setTempUserData({
+                                            ...tempUserData!,
+                                            nickname: e.target.value,
+                                        })
+                                    }
+                                    className="text-2xl font-bold text-center mt-2"
+                                />
+                            </motion.div>
+                        ) : (
+                            <motion.h2
+                                key="display"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="text-2xl font-bold mt-2"
+                            >
+                                {userData.nickname}
+                            </motion.h2>
                         )}
-                        <h2 className="text-2xl font-bold">닉네임</h2>
+                    </AnimatePresence>
+                </motion.section>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Mail className="mr-2" /> 이메일
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>{userData.email}</CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Phone className="mr-2" /> 핸드폰 번호
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         {isEditing ? (
                             <Input
                                 type="text"
-                                value={tempNickname}
-                                onChange={handleNicknameChange}
-                                className="mt-2 text-xl p-3"
+                                value={tempUserData?.phone}
+                                onChange={(e) =>
+                                    setTempUserData({
+                                        ...tempUserData!,
+                                        phone: e.target.value,
+                                    })
+                                }
                             />
                         ) : (
-                            <p className="text-xl mt-2">{nickname}</p>
+                            userData.phone
                         )}
-                    </div>
-                    {isEditing ? (
-                        <div className="flex space-x-2">
-                            <Button
-                                variant="outline"
-                                onClick={handleSave}
-                                className="h-12"
-                            >
-                                확인
-                            </Button>
-                            <Button
-                                variant="outline"
-                                onClick={handleCancelEdit}
-                                className="h-12"
-                            >
-                                취소
-                            </Button>
-                        </div>
-                    ) : (
-                        <Button
-                            variant="outline"
-                            onClick={handleEditToggle}
-                            className="h-12"
-                        >
-                            수정
-                        </Button>
-                    )}
-                </section>
+                    </CardContent>
+                </Card>
 
-                {/* 이메일 표시 */}
-                <section className="border-t pt-4">
-                    <h2 className="text-lg font-bold">이메일</h2>
-                    <p className="text-lg">{userData.email}</p>
-                </section>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <MapPin className="mr-2" /> 주소
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {isEditing ? (
+                            <Input
+                                type="text"
+                                value={tempUserData?.address}
+                                onChange={(e) =>
+                                    setTempUserData({
+                                        ...tempUserData!,
+                                        address: e.target.value,
+                                    })
+                                }
+                            />
+                        ) : (
+                            userData.address
+                        )}
+                    </CardContent>
+                </Card>
 
-                {/* 핸드폰 번호 */}
-                <section className="border-t pt-4">
-                    <h2 className="text-lg font-bold">핸드폰 번호</h2>
-                    {isEditing ? (
-                        <Input
-                            type="text"
-                            value={tempPhone}
-                            onChange={handlePhoneChange}
-                            className="mt-2 text-lg p-2"
-                        />
-                    ) : (
-                        <p className="text-lg mt-2">{phone}</p>
-                    )}
-                </section>
-
-                {/* 주소 */}
-                <section className="border-t pt-4">
-                    <h2 className="text-lg font-bold">주소</h2>
-                    {isEditing ? (
-                        <Input
-                            type="text"
-                            value={tempAddress}
-                            onChange={handleAddressChange}
-                            className="mt-2 text-lg p-2"
-                        />
-                    ) : (
-                        <p className="text-lg mt-2">{address}</p>
-                    )}
-                </section>
-
-                {/* 쿠폰 보유 현황 */}
-                <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">쿠폰 보유 현황</h2>
+                <div className="grid grid-cols-1 gap-4">
                     <Button
                         variant="outline"
-                        className="w-24"
-                        onClick={handleCouponMoreClick}
+                        onClick={() => router.push("/mypage/coupons")}
+                        className="py-6 text-lg"
                     >
-                        더보기
+                        <Gift className="mr-2 h-6 w-6" /> 쿠폰 보유 현황
                     </Button>
-                </section>
-
-                {/* 주문 내역 버튼 */}
-                <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">주문 내역</h2>
                     <Button
                         variant="outline"
-                        className="w-24"
-                        onClick={handleOrderHistoryClick}
+                        onClick={() => router.push("/mypage/orders")}
+                        className="py-6 text-lg"
                     >
-                        더보기
+                        <ShoppingBag className="mr-2 h-6 w-6" /> 주문 내역
                     </Button>
-                </section>
-
-                {/* 대여중인 물품 버튼 */}
-                <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">대여중인 물품</h2>
                     <Button
                         variant="outline"
-                        className="w-24"
-                        onClick={handleRentMoreClick}
+                        onClick={() => router.push("/mypage/rentals")}
+                        className="py-6 text-lg"
                     >
-                        더보기
+                        <Package className="mr-2 h-6 w-6" /> 대여중인 물품
                     </Button>
-                </section>
-
-                {/* 빌려준 물품 버튼 */}
-                <section className="flex justify-between items-center border-t pt-4">
-                    <h2 className="text-lg font-bold">등록한 물품</h2>
                     <Button
                         variant="outline"
-                        className="w-24"
-                        onClick={handleLendMoreClick}
+                        onClick={() => router.push("/mypage/items")}
+                        className="py-6 text-lg"
                     >
-                        더보기
+                        <Upload className="mr-2 h-6 w-6" /> 등록한 물품
                     </Button>
-                </section>
+                </div>
 
-                {/* 관리자 버튼 */}
                 {userData.role === "ADMIN" && (
-                    <section className="flex justify-center mt-8 border-t pt-4">
-                        <Link href="/admin">
-                            <Button>관리자 대시보드</Button>
-                        </Link>
-                    </section>
+                    <Link href="/admin" className="block w-full">
+                        <Button className="w-full py-6 text-lg">
+                            관리자 대시보드
+                        </Button>
+                    </Link>
                 )}
 
-                {/* 로그아웃 버튼 */}
-                <section className="flex justify-center mt-8 border-t pt-4">
+                <div className="flex justify-between">
                     <Signout />
-                </section>
-
-                {/* 로그아웃 및 계정 삭제 버튼 */}
-                <section className="flex flex-col items-center mt-8 border-t pt-4 space-y-4">
                     <Button
                         variant="destructive"
                         onClick={handleDeleteAccount}
-                        className="h-12 w-full max-w-xs"
                         disabled={isDeleting}
+                        className="px-6 py-2"
                     >
+                        <AlertTriangle className="mr-2" />
                         {isDeleting ? "삭제 중..." : "계정 삭제"}
                     </Button>
-                </section>
-            </div>
+                </div>
+            </motion.div>
         </div>
     );
 }
