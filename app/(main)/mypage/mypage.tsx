@@ -158,7 +158,7 @@ export function MyPage() {
 
     if (!userData) {
         return (
-            <div className="flex justify-center h-full bg-gray-100  py-12">
+            <div className="flex justify-center h-full bg-gray-100 ">
                 <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10">
                     <Skeleton className="h-32 w-32 rounded-full mx-auto" />
                     <Skeleton className="h-8 w-3/4 mx-auto" />
@@ -174,7 +174,7 @@ export function MyPage() {
     }
 
     return (
-        <div className="flex justify-center min-h-screen bg-gray-100 py-12">
+        <div className="flex justify-center min-h-screen bg-gray-100">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
