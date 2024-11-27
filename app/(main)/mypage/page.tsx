@@ -44,7 +44,7 @@ const Page: FC<PageProps> = async ({}) => {
 
     return (
         <>
-            <MyPage userData={userData} />
+            <MyPage />
         </>
     );
 };
