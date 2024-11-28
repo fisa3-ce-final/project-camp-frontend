@@ -23,7 +23,6 @@ async function fetchCartQuantity(idToken: string): Promise<number> {
 
     return response.json();
 }
-
 export function GlobalNav({ idToken }: { idToken: string }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -63,13 +62,10 @@ export function GlobalNav({ idToken }: { idToken: string }) {
                                 width={40}
                                 height={40}
                             />
-                            <Image
-                                src="/logo-text.png"
-                                alt="Company Logo Text"
-                                width={120}
-                                height={40}
-                                className="ml-2 hidden sm:block"
-                            />
+                            {/* "우리캠핑" 텍스트로 변경 */}
+                            <span className="ml-2 text-lg font-bold text-gray-900 hidden sm:block">
+                                우리캠핑
+                            </span>
                         </Link>
                     </div>
 
