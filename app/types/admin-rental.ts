@@ -32,3 +32,27 @@ export interface RentalItemsResponse {
     first: boolean;
     empty: boolean;
 }
+
+export interface Rental {
+    rentalId: number;
+    userId: number;
+    userName: string;
+    rentalItemName: string;
+    rentalItemCategory: string;
+    rentalDate: string;
+    returnDate: string;
+    status: string;
+    price: number;
+}
+
+export interface RentalResponse {
+    content: Rental[];
+    totalPages: number;
+    totalElements: number;
+    last: boolean;
+    size: number;
+    number: number;
+    first: boolean;
+    numberOfElements: number;
+    empty: boolean;
+}
