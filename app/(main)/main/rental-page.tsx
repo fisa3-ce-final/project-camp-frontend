@@ -195,7 +195,7 @@ const RentalPage: FC<RentalPageProps> = ({
                     </div>
 
                     <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
-                        <div className="relative w-full md:w-1/2">
+                        <div className="relative w-full ">
                             <Input
                                 type="text"
                                 value={searchQuery}
