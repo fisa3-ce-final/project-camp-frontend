@@ -158,16 +158,16 @@ export function MyPage() {
 
     if (!userData) {
         return (
-            <div className="flex justify-center h-full bg-gray-100 ">
+            <div className="flex justify-center h-full bg-gray-100 min-h-screen ">
                 <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10">
-                    <Skeleton className="h-32 w-32 rounded-full mx-auto" />
+                    {/* <Skeleton className="h-32 w-32 rounded-full mx-auto" />
                     <Skeleton className="h-8 w-3/4 mx-auto" />
                     <Skeleton className="h-6 w-1/2 mx-auto" />
                     <div className="space-y-4">
                         {[...Array(4)].map((_, i) => (
                             <Skeleton key={i} className="h-12 w-full" />
                         ))}
-                    </div>
+                    </div> */}
                 </div>
             </div>
         );
@@ -375,7 +375,7 @@ export function MyPage() {
                         className="px-6 py-2"
                     >
                         <AlertTriangle className="mr-2" />
-                        {isDeleting ? "삭제 중..." : "계정 삭제"}
+                        {isDeleting ? "탈퇴 중..." : "회원 탈퇴"}
                     </Button>
                     <Signout />
                 </div>
