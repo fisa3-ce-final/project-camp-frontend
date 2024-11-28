@@ -54,7 +54,7 @@ export function GlobalNav({ idToken }: { idToken: string }) {
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <Link
-                            href="/"
+                            href="/main"
                             className="flex-shrink-0 flex items-center"
                         >
                             <Image
