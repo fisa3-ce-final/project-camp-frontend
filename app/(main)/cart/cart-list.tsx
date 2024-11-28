@@ -323,7 +323,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-full justify-start text-left font-normal mt-1"
+                                            className="w-full h-[50px] justify-start text-left font-normal mt-1"
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
                                             {date.from && date.to ? (
