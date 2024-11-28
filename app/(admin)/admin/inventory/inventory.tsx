@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
 
 interface InventoryClientProps {
     initialData: RentalItem[];
@@ -79,58 +80,64 @@ const InventoryClient: FC<InventoryClientProps> = ({
     return (
         <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {rentalItems.map((item) => (
-                    <Card
+                {rentalItems.map((item, index) => (
+                    <motion.div
                         key={item.rentalItemId}
-                        className="border rounded-lg shadow-sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                            duration: 0.5,
+                            delay: index * 0.1, // 각 카드마다 지연 시간 추가
+                        }}
                     >
-                        <CardHeader>
-                            <CardTitle>{item.name}</CardTitle>
-                            <CardDescription>
-                                {categoryMapEngToKor[item.category]}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p>가격: {item.price.toFixed(2)} 원 </p>
-                            상태:
-                            {/* AVAILABE, PENDING, REJECTED  */}
-                            <Badge
-                                className={
-                                    item.status === "AVAILABLE"
-                                        ? "bg-green-600"
-                                        : item.status === "PENDING"
-                                        ? "bg-yellow-600"
-                                        : "bg-red-600"
-                                }
-                            >
-                                {item.status}
-                            </Badge>
-                        </CardContent>
-                        <CardFooter className="flex justify-between">
-                            <Button
-                                variant="outline"
-                                onClick={() =>
-                                    handleStatusUpdate(
-                                        item.rentalItemId,
-                                        "AVAILABLE"
-                                    )
-                                }
-                            >
-                                승인
-                            </Button>
-                            <Button
-                                variant="destructive"
-                                onClick={() =>
-                                    handleStatusUpdate(
-                                        item.rentalItemId,
-                                        "REJECTED"
-                                    )
-                                }
-                            >
-                                반려
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                        <Card className="border rounded-lg shadow-sm">
+                            <CardHeader>
+                                <CardTitle>{item.name}</CardTitle>
+                                <CardDescription>
+                                    {categoryMapEngToKor[item.category]}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p>가격: {item.price.toFixed(2)} 원 </p>
+                                상태:
+                                <Badge
+                                    className={
+                                        item.status === "AVAILABLE"
+                                            ? "bg-green-600"
+                                            : item.status === "PENDING"
+                                            ? "bg-yellow-600"
+                                            : "bg-red-600"
+                                    }
+                                >
+                                    {item.status}
+                                </Badge>
+                            </CardContent>
+                            <CardFooter className="flex justify-between">
+                                <Button
+                                    variant="outline"
+                                    onClick={() =>
+                                        handleStatusUpdate(
+                                            item.rentalItemId,
+                                            "AVAILABLE"
+                                        )
+                                    }
+                                >
+                                    승인
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    onClick={() =>
+                                        handleStatusUpdate(
+                                            item.rentalItemId,
+                                            "REJECTED"
+                                        )
+                                    }
+                                >
+                                    반려
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </motion.div>
                 ))}
             </div>
             <div className="flex justify-between items-center mt-4">
