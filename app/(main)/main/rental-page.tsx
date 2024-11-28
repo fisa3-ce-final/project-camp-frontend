@@ -3,13 +3,15 @@
 import { FC, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { MainSidebar } from "@/app/components/main-sidebar";
 import { Button } from "@/components/ui/button";
 import { RentalItemCard } from "@/app/components/rental-item-card";
 import { categoryMapEngToKor } from "@/app/types/category-map";
 import { RentalPageData } from "@/app/types/rental-item";
-import { Menu } from "lucide-react";
+import { Menu, Search, Plus } from "lucide-react";
 import debounce from "lodash.debounce";
+import { Input } from "@/components/ui/input";
 
 export interface RentalPageProps {
     rentalPageData: RentalPageData;
@@ -170,126 +172,139 @@ const RentalPage: FC<RentalPageProps> = ({
     }, [searchQuery]);
 
     return (
-        <div className="flex flex-col md:flex-row min-h-screen">
-            {/* Sidebar */}
+        <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
             <MainSidebar
                 onCategorySelect={handleCategorySelect}
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
             />
-            {/* Main Content */}
-            <main className="flex-1 p-4 overflow-y-auto">
-                {/* Mobile Header */}
-                <div className="flex items-center justify-between md:hidden mb-4">
-                    <Button
-                        onClick={() => setIsSidebarOpen(true)}
-                        variant="ghost"
-                        className="p-2"
-                        aria-label="메뉴 열기"
-                    >
-                        <Menu className="w-5 h-5" />
-                    </Button>
-                    <h1 className="text-lg font-semibold">렌탈 아이템</h1>
-                </div>
-                {/* Search and Actions */}
-                <div className="flex flex-col md:flex-row items-center w-full gap-4 mb-6">
-                    <div className="flex-1 w-full">
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="검색어를 입력하세요"
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleSearch();
-                                }
-                            }}
-                            className="border rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div className="flex space-x-2 w-full md:w-auto">
+            <main className="flex-1 p-4 md:p-8">
+                <div className="max-w-6xl mx-auto">
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="text-2xl md:text-3xl font-bold">
+                            렌탈 아이템
+                        </h1>
                         <Button
-                            onClick={handleSearch}
-                            className="w-full md:w-auto"
-                            disabled={searchQuery.trim() === ""}
+                            variant="ghost"
+                            size="icon"
+                            className="md:hidden"
+                            onClick={() => setIsSidebarOpen(true)}
                         >
-                            검색
+                            <Menu className="h-6 w-6" />
                         </Button>
-                        <Link href="/main/write" className="w-full md:w-auto">
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
+                        <div className="relative w-full md:w-1/2">
+                            <Input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="검색어를 입력하세요"
+                                className="pl-10"
+                            />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        </div>
+                        <div className="flex gap-2 w-full md:w-auto">
                             <Button
-                                variant="default"
+                                onClick={handleSearch}
                                 className="w-full md:w-auto"
                             >
-                                글쓰기
+                                검색
                             </Button>
-                        </Link>
-                    </div>
-                </div>
-                {/* 로딩 및 에러 메시지 */}
-                {/* {isLoading && <p>로딩 중...</p>} */}
-                {error && <p className="text-red-500">{error}</p>}
-                {/* 렌탈 아이템 그리드 */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {rentalItems.map((item) => (
-                        <Link
-                            href={`/main/detail/${item.rentalId}`}
-                            key={"main_detail_" + item.rentalId}
-                        >
-                            <RentalItemCard
-                                userImageUrl={
-                                    item.userImageUrl || "/logo-img.png"
-                                }
-                                rentalImageUrl={
-                                    item.rentalImageUrl === "이미지 없음"
-                                        ? "/placeholder_rental_image.jpg"
-                                        : item.rentalImageUrl
-                                }
-                                nickname={item.nickname || "N/A"}
-                                name={item.rentalItemName}
-                                price={item.price}
-                                rating={item.ratingAvg} // 예시 고정 값
-                                category={categoryMapEngToKor[item.category]}
-                            />
-                        </Link>
-                    ))}
-                </div>
-                {/* 페이지네이션 버튼 */}
-                <div className="flex justify-center mt-6 space-x-2 flex-wrap">
-                    {startPage > 1 && (
-                        <Button
-                            onClick={() => handlePageChange(startPage - 10)}
-                            className="mb-2"
-                        >
-                            이전
-                        </Button>
-                    )}
-                    {Array.from(
-                        { length: endPage - startPage + 1 },
-                        (_, index) => (
-                            <Button
-                                key={index}
-                                onClick={() =>
-                                    handlePageChange(startPage + index)
-                                }
-                                variant={
-                                    page === startPage + index
-                                        ? "default"
-                                        : "outline"
-                                }
-                                className="mb-2"
+                            <Link
+                                href="/main/write"
+                                className="w-full md:w-auto"
                             >
-                                {startPage + index}
-                            </Button>
-                        )
-                    )}
-                    {endPage < totalPages && (
-                        <Button
-                            onClick={() => handlePageChange(startPage + 10)}
-                            className="mb-2"
-                        >
-                            다음
-                        </Button>
-                    )}
+                                <Button variant="outline" className="w-full">
+                                    <Plus className="mr-2 h-4 w-4" /> 글쓰기
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {error && <div className="text-red-500 mb-4">{error}</div>}
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                    >
+                        {rentalItems.map((item) => (
+                            <motion.div
+                                key={`main_detail_${item.rentalId}`}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <Link href={`/main/detail/${item.rentalId}`}>
+                                    <RentalItemCard
+                                        userImageUrl={
+                                            item.userImageUrl || "/logo-img.png"
+                                        }
+                                        rentalImageUrl={
+                                            item.rentalImageUrl ===
+                                            "이미지 없음"
+                                                ? "/placeholder_rental_image.jpg"
+                                                : item.rentalImageUrl
+                                        }
+                                        nickname={item.nickname || "N/A"}
+                                        name={item.rentalItemName}
+                                        price={item.price}
+                                        rating={item.ratingAvg}
+                                        category={
+                                            categoryMapEngToKor[item.category]
+                                        }
+                                    />
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+
+                    <div className="flex justify-center mt-8">
+                        <div className="join">
+                            {startPage > 1 && (
+                                <Button
+                                    onClick={() =>
+                                        handlePageChange(startPage - 10)
+                                    }
+                                    className="join-item"
+                                >
+                                    «
+                                </Button>
+                            )}
+                            {Array.from(
+                                { length: endPage - startPage + 1 },
+                                (_, index) => (
+                                    <Button
+                                        key={index}
+                                        onClick={() =>
+                                            handlePageChange(startPage + index)
+                                        }
+                                        variant={
+                                            page === startPage + index
+                                                ? "default"
+                                                : "outline"
+                                        }
+                                        className="mb-2 mr-2"
+                                    >
+                                        {startPage + index}
+                                    </Button>
+                                )
+                            )}
+                            {endPage < totalPages && (
+                                <Button
+                                    onClick={() =>
+                                        handlePageChange(startPage + 10)
+                                    }
+                                    className="join-item"
+                                >
+                                    »
+                                </Button>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

@@ -10,8 +10,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "캠피파이",
-    description: "캠핑 장비 대여 서비스. 캠피파이!",
+    title: "우리캠핑",
+    description: "캠핑 장비 대여 서비스. 우리캠핑!",
 };
 
 export default function RootLayout({
