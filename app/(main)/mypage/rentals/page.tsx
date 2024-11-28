@@ -8,7 +8,7 @@ interface RentalsServerPageProps {}
 const RentalsServerPage: FC<RentalsServerPageProps> = async ({}) => {
     const session = await getServerSession(authOptions);
 
-    return <MyRentalsPage idToken={session?.user.id_token!} />;
+    return <MyRentalsPage />;
 };
 
 export default RentalsServerPage;
