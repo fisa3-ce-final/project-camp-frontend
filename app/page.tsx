@@ -41,23 +41,23 @@ export default function LandingPage() {
                         objectFit="cover"
                         quality={100}
                     />
-                    <div className="absolute inset-0 bg-white bg-opacity-70"></div>
                 </div>
 
                 <motion.div
-                    className="container mx-auto px-6 relative z-10"
+                    className="relative z-10 flex flex-col items-center justify-center max-w-3xl px-6 py-10 bg-black bg-opacity-50 rounded-lg text-center"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
+                    {/* 텍스트 섹션 */}
                     <motion.h1
-                        className="text-4xl md:text-6xl font-bold mb-4 text-gray-900"
+                        className="text-4xl md:text-6xl font-bold mb-4 text-white"
                         variants={itemVariants}
                     >
                         우리캠핑
                     </motion.h1>
                     <motion.p
-                        className="text-lg md:text-xl mb-6 text-gray-700 max-w-2xl"
+                        className="text-lg md:text-xl mb-6 text-gray-100"
                         variants={itemVariants}
                     >
                         자연 속에서 특별한 순간을 만들어보세요. 우리캠핑과
@@ -79,7 +79,7 @@ export default function LandingPage() {
                         repeatType: "reverse",
                     }}
                 >
-                    <ChevronDown className="w-8 h-8 text-gray-600" />
+                    <ChevronDown className="w-8 h-8 text-gray-300" />
                 </motion.div>
             </section>
 
