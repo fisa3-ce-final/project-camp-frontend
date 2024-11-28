@@ -80,7 +80,7 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
             transition={{ duration: 0.5 }}
             className="p-4 flex justify-center"
         >
-            <Card className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+            <Card className="w-full max-w-6xl bg-white shadow-lg rounded-lg overflow-hidden">
                 <div className="flex flex-col md:flex-row">
                     <div className="md:w-1/2 p-6">
                         {image?.length > 0 ? (
@@ -100,8 +100,8 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
                                         </CarouselItem>
                                     ))}
                                 </CarouselContent>
-                                <CarouselPrevious />
-                                <CarouselNext />
+                                <CarouselPrevious className="absolute left-[-5] top-1/2 transform -translate-y-1/2 -translate-x-4 z-10" />
+                                <CarouselNext className="absolute right-[-5] top-1/2 transform -translate-y-1/2 translate-x-4 z-10" />
                             </Carousel>
                         ) : (
                             <div className="w-full aspect-square bg-gray-200 flex items-center justify-center rounded-lg">
