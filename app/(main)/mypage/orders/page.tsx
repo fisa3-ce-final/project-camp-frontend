@@ -8,7 +8,7 @@ interface MyOrdersProps {}
 const MyOrders: FC<MyOrdersProps> = async () => {
     const session = await getServerSession(authOptions);
 
-    return <MyOrdersPage idToken={session?.user.id_token!} />;
+    return <MyOrdersPage />;
 };
 
 export default MyOrders;
