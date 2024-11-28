@@ -2,6 +2,7 @@
 
 import { FC, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { getQueryClient } from "@/app/lib/get-query-client";
+import { Star, Calendar, Package, Eye } from "lucide-react";
 
 interface ItemDetailProps {
     itemDetail: RentalItemDetail;
@@ -63,46 +65,38 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
             } else {
                 const errorText = await response.text();
                 toast.error(errorText);
-                // setTimeout(() => {
-                //     window.location.reload(); // 요청 실패 시 새로고침
-                // }, 1000);
             }
         } catch (error) {
             toast.error("서버와의 통신 중 오류가 발생했습니다.");
-            // setTimeout(() => {
-            //     window.location.reload(); // 예외 발생 시 새로고침
-            // }, 1000);
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="p-4 flex justify-center">
-            <div className="w-full max-w-4xl bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
-                <Button
-                    variant="outline"
-                    onClick={() => router.back()}
-                    className="m-4"
-                >
-                    ← 뒤로가기
-                </Button>
-                <div className="flex flex-col gap-6 p-6">
-                    <div className="w-full flex justify-center">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="p-4 flex justify-center"
+        >
+            <Card className="w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+                <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/2 p-6">
                         {image?.length > 0 ? (
-                            <Carousel className="w-full max-w-md">
+                            <Carousel className="w-full">
                                 <CarouselContent>
                                     {image.map((imgInfo, index) => (
-                                        <CarouselItem key={"img_" + index}>
-                                            <Card>
-                                                <CardContent className="flex aspect-square items-center justify-center p-0">
-                                                    <img
-                                                        src={imgInfo.imageUrl}
-                                                        alt="상품 이미지"
-                                                        className="select-none"
-                                                    ></img>
-                                                </CardContent>
-                                            </Card>
+                                        <CarouselItem key={`img_${index}`}>
+                                            <div className="aspect-square relative overflow-hidden rounded-lg">
+                                                <img
+                                                    src={imgInfo.imageUrl}
+                                                    alt={`상품 이미지 ${
+                                                        index + 1
+                                                    }`}
+                                                    className="object-cover w-full h-full"
+                                                />
+                                            </div>
                                         </CarouselItem>
                                     ))}
                                 </CarouselContent>
@@ -110,53 +104,64 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
                                 <CarouselNext />
                             </Carousel>
                         ) : (
-                            <div className="w-full h-64 md:h-80 bg-gray-200 flex items-center justify-center rounded-md">
-                                이미지 없음
+                            <div className="w-full aspect-square bg-gray-200 flex items-center justify-center rounded-lg">
+                                <Package size={48} className="text-gray-400" />
                             </div>
                         )}
                     </div>
-
-                    <div className="flex flex-col">
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            <Badge variant="secondary">
-                                {categoryMapEngToKor[category]}
-                            </Badge>
+                    <div className="md:w-1/2 p-6 flex flex-col justify-between">
+                        <div>
+                            <div className="flex justify-between items-start mb-4">
+                                <Badge variant="secondary" className="text-sm">
+                                    {categoryMapEngToKor[category]}
+                                </Badge>
+                                <div className="flex items-center text-yellow-500">
+                                    <Star className="w-4 h-4 mr-1" />
+                                    <span>{ratingAvg.toFixed(1)}</span>
+                                    <span className="text-gray-500 text-sm ml-1">
+                                        ({reviewNum} 리뷰)
+                                    </span>
+                                </div>
+                            </div>
+                            <h1 className="text-2xl font-bold mb-2">{name}</h1>
+                            <p className="text-gray-600 mb-4">{description}</p>
+                            <div className="flex items-center mb-2">
+                                <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                                <p className="text-sm text-gray-500">
+                                    등록일:{" "}
+                                    {new Date(createdAt).toLocaleDateString()}
+                                </p>
+                            </div>
+                            <div className="flex items-center mb-4">
+                                <Eye className="w-4 h-4 mr-2 text-gray-500" />
+                                <p className="text-sm text-gray-500">
+                                    조회수: {viewCount}
+                                </p>
+                            </div>
                         </div>
-
-                        <h1 className="text-2xl font-bold mb-2">{name}</h1>
-
-                        <p className="text-sm text-gray-500">
-                            등록일: {new Date(createdAt).toLocaleDateString()}
-                        </p>
-
-                        <div className="mb-4">
-                            <p className="text-lg font-semibold mb-1">
-                                가격:{" "}
-                                <span className="text-primary">{price} 원</span>
+                        <div>
+                            <p className="text-3xl font-bold text-primary mb-4">
+                                {price.toLocaleString()} 원
+                                <span className="text-base font-normal text-gray-500">
+                                    /일
+                                </span>
                             </p>
-                            <p>재고: {stock}개</p>
-                            <p>조회수: {viewCount}</p>
-                            <p>
-                                평점: {ratingAvg}점 ({reviewNum} 리뷰)
+                            <p className="mb-4 text-sm text-gray-600">
+                                재고: {stock}개
                             </p>
-                        </div>
-
-                        <p className="mb-4">{description}</p>
-
-                        <div className="mt-4">
                             <Button
                                 variant="default"
                                 className="w-full"
                                 onClick={handleRentButtonClick}
-                                disabled={isLoading} // 비활성화 상태 추가
+                                disabled={isLoading}
                             >
                                 {isLoading ? "담는 중..." : "장바구니 담기"}
                             </Button>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </Card>
+        </motion.div>
     );
 };
 

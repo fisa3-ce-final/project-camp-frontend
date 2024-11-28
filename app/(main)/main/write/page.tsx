@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,7 +45,7 @@ const formSchema = z.object({
 export default function CampingItemForm() {
     const [files, setFiles] = useState<File[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const [isLoading, setIsLoading] = useState(false); // Loading state
+    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const session = useSession();
 
@@ -68,7 +69,7 @@ export default function CampingItemForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            setIsLoading(true); // Set loading state to true
+            setIsLoading(true);
             const formData = new FormData();
             formData.append("name", values.name);
             formData.append("description", values.description);
@@ -91,7 +92,7 @@ export default function CampingItemForm() {
             }
 
             toast.success("등록이 완료되었습니다!");
-            setFiles([]); // Reset file state
+            setFiles([]);
             router.push("/main");
         } catch (error) {
             toast.error(
@@ -100,7 +101,7 @@ export default function CampingItemForm() {
                     : "서버 요청에 실패했습니다."
             );
         } finally {
-            setIsLoading(false); // Reset loading state
+            setIsLoading(false);
         }
     }
 
@@ -115,7 +116,6 @@ export default function CampingItemForm() {
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-8"
                     >
-                        {/* 물품 이름 */}
                         <FormField
                             control={form.control}
                             name="name"
@@ -133,7 +133,6 @@ export default function CampingItemForm() {
                             )}
                         />
 
-                        {/* 상세 설명 */}
                         <FormField
                             control={form.control}
                             name="description"
@@ -151,7 +150,6 @@ export default function CampingItemForm() {
                             )}
                         />
 
-                        {/* 가격 */}
                         <FormField
                             control={form.control}
                             name="price"
@@ -170,7 +168,6 @@ export default function CampingItemForm() {
                             )}
                         />
 
-                        {/* 수량 */}
                         <FormField
                             control={form.control}
                             name="stock"
@@ -189,7 +186,6 @@ export default function CampingItemForm() {
                             )}
                         />
 
-                        {/* 카테고리 */}
                         <FormField
                             control={form.control}
                             name="category"
@@ -228,7 +224,6 @@ export default function CampingItemForm() {
                             )}
                         />
 
-                        {/* 사진 업로드 */}
                         <FormField
                             control={form.control}
                             name="images"
@@ -285,7 +280,7 @@ export default function CampingItemForm() {
                             <Button
                                 type="submit"
                                 className="px-6 py-3 rounded-md"
-                                disabled={isLoading} // Disable button when loading
+                                disabled={isLoading}
                             >
                                 {isLoading ? "등록 중..." : "등록하기"}
                             </Button>

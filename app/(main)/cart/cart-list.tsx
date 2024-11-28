@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
@@ -9,7 +10,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ShoppingCart, Tag } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -24,6 +25,7 @@ import { categoryMapEngToKor } from "@/app/types/category-map";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const CartList = ({ idToken }: { idToken: string }) => {
     const [cartData, setCartData] = useState<CartPageData | null>(null);
@@ -203,12 +205,10 @@ const CartList = ({ idToken }: { idToken: string }) => {
             toast.error(`대여 신청에 실패했습니다: ${error.message}`);
         }
     };
-
     if (isLoading) {
         return (
             <div className="max-w-4xl mx-auto p-4">
                 <Skeleton className="h-10 w-1/3 mb-6" />
-
                 <div className="grid md:grid-cols-3 gap-6">
                     <div className="md:col-span-2 space-y-4">
                         {Array(3)
@@ -220,10 +220,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                 />
                             ))}
                     </div>
-
-                    <div className="space-y-6">
-                        <Skeleton className="h-40 w-full rounded-lg" />
-                    </div>
+                    <Skeleton className="h-[400px] w-full rounded-lg" />
                 </div>
             </div>
         );
@@ -231,70 +228,93 @@ const CartList = ({ idToken }: { idToken: string }) => {
 
     if (!cartData || cartData.cartItems.length === 0) {
         return (
-            <div className="max-w-4xl mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-6">장바구니 🛒</h1>
-                <p>장바구니에 담긴 상품이 없습니다.</p>
-            </div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="max-w-4xl mx-auto p-4 text-center"
+            >
+                <ShoppingCart className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                <h1 className="text-2xl font-bold mb-2">
+                    장바구니가 비어있습니다
+                </h1>
+                <p className="text-gray-600 mb-4">
+                    상품을 둘러보고 장바구니에 담아보세요!
+                </p>
+                <Button onClick={() => router.push("/main")}>
+                    상품 둘러보기
+                </Button>
+            </motion.div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">장바구니 🛒</h1>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-4xl mx-auto p-4"
+        >
+            <h1 className="text-3xl font-bold mb-6">장바구니 🛒</h1>
 
             <div className="grid md:grid-cols-3 gap-6">
                 <div className="md:col-span-2 space-y-4">
                     {cartData.cartItems.map((item) => (
-                        <div
+                        <motion.div
                             key={item.id}
-                            className="flex items-center justify-between border rounded-lg p-4 hover:shadow-md transition-shadow"
-                            onClick={() => {
-                                handleSelectItem(item.id);
-                            }}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.3 }}
                         >
-                            <div className="flex items-center space-x-4">
-                                <Checkbox
-                                    checked={selectedItems.includes(item.id)}
-                                    onCheckedChange={() =>
-                                        handleSelectItem(item.id)
-                                    }
-                                />
-                                <img
-                                    src={
-                                        item.rentalItem.image[0]?.imageUrl ||
-                                        "/placeholder_rental_image.jpg"
-                                    }
-                                    alt={item.rentalItem.name}
-                                    className="w-20 h-20 object-cover rounded"
-                                />
-                                <div>
-                                    <p className="font-medium">
-                                        {item.rentalItem.name}
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {
-                                            categoryMapEngToKor[
-                                                item.rentalItem.category
-                                            ]
+                            <Card className="hover:shadow-md transition-shadow">
+                                <CardContent className="flex items-center p-4">
+                                    <Checkbox
+                                        checked={selectedItems.includes(
+                                            item.id
+                                        )}
+                                        onCheckedChange={() =>
+                                            handleSelectItem(item.id)
                                         }
-                                    </p>
-                                    <p className="font-semibold">
-                                        {item.rentalItem.price.toLocaleString()}{" "}
-                                        원/일
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        수량: {item.quantity}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                                        className="mr-4"
+                                    />
+                                    <img
+                                        src={
+                                            item.rentalItem.image[0]
+                                                ?.imageUrl ||
+                                            "/placeholder_rental_image.jpg"
+                                        }
+                                        alt={item.rentalItem.name}
+                                        className="w-20 h-20 object-cover rounded mr-4"
+                                    />
+                                    <div className="flex-grow">
+                                        <h3 className="font-medium">
+                                            {item.rentalItem.name}
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            {
+                                                categoryMapEngToKor[
+                                                    item.rentalItem.category
+                                                ]
+                                            }
+                                        </p>
+                                        <p className="font-semibold">
+                                            {item.rentalItem.price.toLocaleString()}{" "}
+                                            원/일
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            수량: {item.quantity}
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     ))}
                 </div>
 
                 <div className="space-y-6">
-                    <div className="border rounded-lg p-4">
-                        <h2 className="font-semibold mb-4">대여 요약 📋</h2>
-                        <div className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>대여 요약 📋</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
                             <div>
                                 <label className="text-sm font-medium">
                                     대여 기간 📅 (총 {getRentalDays()}일)
@@ -303,63 +323,35 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-full justify-start text-left font-normal mt-1  h-[70px]"
+                                            className="w-full justify-start text-left font-normal mt-1"
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            <div>
-                                                {date.from && date.to ? (
-                                                    <>
-                                                        {format(
-                                                            date.from,
-                                                            "PPP",
-                                                            { locale: ko }
-                                                        )}{" "}
-                                                        ~
-                                                        <br />
-                                                        {format(
-                                                            date.to,
-                                                            "PPP",
-                                                            { locale: ko }
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    "날짜를 선택하세요"
-                                                )}
-                                            </div>
+                                            {date.from && date.to ? (
+                                                <>
+                                                    {format(date.from, "PPP", {
+                                                        locale: ko,
+                                                    })}{" "}
+                                                    ~<br />
+                                                    {format(date.to, "PPP", {
+                                                        locale: ko,
+                                                    })}
+                                                </>
+                                            ) : (
+                                                "날짜를 선택하세요"
+                                            )}
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent>
+                                    <PopoverContent className="w-auto p-0">
                                         <Calendar
                                             mode="range"
                                             selected={date}
                                             onSelect={(range) => {
-                                                if (range) {
-                                                    console.log(
-                                                        "from",
-                                                        range.from
-                                                    );
-                                                    console.log("to", range.to);
-                                                }
-
-                                                if (
-                                                    range &&
-                                                    range.from &&
-                                                    !range.to
-                                                ) {
+                                                if (range && range.from) {
                                                     setDate({
                                                         from: range.from,
-                                                        to: range.from,
-                                                    });
-                                                }
-
-                                                if (
-                                                    range &&
-                                                    range.from &&
-                                                    range.to
-                                                ) {
-                                                    setDate({
-                                                        from: range.from,
-                                                        to: range.to,
+                                                        to:
+                                                            range.to ||
+                                                            range.from,
                                                     });
                                                 }
                                             }}
@@ -418,8 +410,8 @@ const CartList = ({ idToken }: { idToken: string }) => {
                                     </span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                     <Button
                         className="w-full"
                         size="lg"
@@ -429,7 +421,7 @@ const CartList = ({ idToken }: { idToken: string }) => {
                     </Button>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
