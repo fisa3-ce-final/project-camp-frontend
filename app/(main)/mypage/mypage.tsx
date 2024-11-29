@@ -116,6 +116,7 @@ export function MyPage() {
                 session.user.id_token,
                 formData
             );
+            updatedData.email = userData?.email!; // Keep the email unchanged
             setUserData(updatedData);
 
             // Ensure the new image URL is reflected immediately
