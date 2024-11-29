@@ -37,8 +37,8 @@ export default function LandingPage() {
                     <Image
                         src="/camping-hero.webp"
                         alt="Camping scene"
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        style={{ objectFit: "cover" }}
                         quality={100}
                     />
                 </div>
