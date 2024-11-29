@@ -64,7 +64,7 @@ export default function LandingPage() {
                         함께라면 누구나 쉽고 즐겁게 캠핑을 즐길 수 있습니다.
                     </motion.p>
                     <motion.div variants={itemVariants}>
-                        <Signin />
+                        <Signin text="시작하기" />
                     </motion.div>
                 </motion.div>
 
@@ -137,12 +137,10 @@ export default function LandingPage() {
                     <p className="text-xl mb-8">
                         우리캠핑과 함께라면 누구나 캠핑 전문가가 될 수 있습니다.
                     </p>
-                    <Link
-                        href="/signup"
+                    <Signin
+                        text="둘러보기"
                         className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-green-600 bg-white hover:bg-gray-100 transition duration-150 ease-in-out"
-                    >
-                        가입하기
-                    </Link>
+                    />
                 </div>
             </section>
 
