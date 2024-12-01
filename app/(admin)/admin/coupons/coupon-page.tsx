@@ -144,7 +144,7 @@ const CouponPage: FC<CouponPageProps> = ({ couponData, idToken }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen"
+            className="bg-gradient-to-br min-h-screen"
         >
             <Card className="w-full max-w-6xl mx-auto">
                 <CardHeader>

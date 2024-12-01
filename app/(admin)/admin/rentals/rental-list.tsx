@@ -12,16 +12,30 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Rental, RentalResponse } from "@/app/types/admin-rental";
-import { categoryMapEngToKor } from "@/app/types/category-map";
 
-const RentalList: React.FC = () => {
+interface RentalListProps {
+    idToken: string;
+}
+
+const RentalList: React.FC<RentalListProps> = ({ idToken }) => {
     const [data, setData] = useState<RentalResponse | null>(null);
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [updating, setUpdating] = useState<Set<number>>(new Set());
+
+    const statusMap: Record<string, string> = {
+        COMPLETED: "완료",
+        PENDING: "대기",
+        CANCELLED: "취소",
+        RENTED: "대여 중",
+        RETURNED: "반납됨",
+        OVERDUE: "연체",
+    };
 
     useEffect(() => {
         fetchData();
@@ -31,25 +45,63 @@ const RentalList: React.FC = () => {
         setLoading(true);
         try {
             const response = await fetch(
-                `/backend/admin/rentals/all?page=${page}&size=10`
+                `/backend/admin/rentals?page=${page}&size=20`,
+                {
+                    method: "GET",
+                    cache: "no-store",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${idToken}`,
+                    },
+                }
             );
+            if (!response.ok) {
+                throw new Error("데이터를 불러오는 중 오류 발생");
+            }
             const jsonData: RentalResponse = await response.json();
             setData(jsonData);
         } catch (error) {
-            console.error("데이터를 불러오는 중 오류가 발생했습니다:", error);
+            console.error("데이터 로드 실패:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const tableVariants = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.05,
-            },
-        },
+    const handleReturn = async (orderId: number) => {
+        setUpdating((prev) => new Set(prev).add(orderId));
+        try {
+            const response = await fetch(
+                `/backend/admin/rentals/${orderId}?status=RETURNED`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${idToken}`,
+                    },
+                }
+            );
+            if (!response.ok) {
+                throw new Error("반납 처리 실패");
+            }
+            // Optimistic UI 업데이트
+            setData((prevData) => {
+                if (!prevData) return prevData;
+                const updatedContent = prevData.content.map((rental) =>
+                    rental.orderId === orderId
+                        ? { ...rental, status: "RETURNED" }
+                        : rental
+                );
+                return { ...prevData, content: updatedContent };
+            });
+        } catch (error) {
+            console.error("반납 처리 중 오류 발생:", error);
+        } finally {
+            setUpdating((prev) => {
+                const updated = new Set(prev);
+                updated.delete(orderId);
+                return updated;
+            });
+        }
     };
 
     const tableRowVariants = {
@@ -62,170 +114,131 @@ const RentalList: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="p-8  min-h-screen"
+            className="p-8 min-h-screen"
         >
             <Card className="w-full max-w-6xl mx-auto">
                 <CardHeader>
-                    <CardTitle className="text-3xl font-bold text-primary">
-                        대여 이용 현황
+                    <CardTitle className="text-xl font-bold text-primary">
+                        대여 내역 관리 🚀
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="rounded-md border overflow-hidden">
+                    <div className="overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="font-bold">
-                                        대여 ID
-                                    </TableHead>
-                                    <TableHead className="font-bold">
-                                        사용자 이름
-                                    </TableHead>
-                                    <TableHead className="font-bold">
-                                        대여 물품
-                                    </TableHead>
-                                    <TableHead className="font-bold">
-                                        카테고리
-                                    </TableHead>
-                                    <TableHead className="font-bold">
-                                        대여일
-                                    </TableHead>
-                                    <TableHead className="font-bold">
-                                        반납일
-                                    </TableHead>
-                                    <TableHead className="font-bold">
-                                        상태
-                                    </TableHead>
-                                    <TableHead className="font-bold">
-                                        가격
-                                    </TableHead>
+                                    <TableHead>대여 ID</TableHead>
+                                    <TableHead>사용자 이름</TableHead>
+                                    <TableHead>대여일</TableHead>
+                                    <TableHead>반납일</TableHead>
+                                    <TableHead>상태</TableHead>
+                                    <TableHead>가격</TableHead>
+                                    <TableHead>액션</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <AnimatePresence mode="wait">
+                                <AnimatePresence>
                                     {loading ? (
                                         <TableRow>
-                                            <TableCell colSpan={8}>
-                                                <div className="space-y-2">
-                                                    {[...Array(5)].map(
-                                                        (_, index) => (
-                                                            <Skeleton
-                                                                key={index}
-                                                                className="h-12 w-full"
-                                                            />
-                                                        )
-                                                    )}
-                                                </div>
+                                            <TableCell colSpan={7}>
+                                                <Skeleton className="h-10 w-full" />
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        <motion.tbody
-                                            variants={tableVariants}
-                                            initial="hidden"
-                                            animate="show"
-                                        >
-                                            {data?.content.map((rental) => (
-                                                <motion.tr
-                                                    key={`${rental.rentalId}_${rental.userId}_${rental.returnDate}`}
-                                                    variants={tableRowVariants}
-                                                    initial="hidden"
-                                                    animate="show"
-                                                    exit="hidden"
-                                                    className="hover:bg-gray-100 transition-colors duration-200"
-                                                >
-                                                    <TableCell>
-                                                        {rental.rentalId}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {rental.userName}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {rental.rentalItemName}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {
-                                                            categoryMapEngToKor[
-                                                                rental
-                                                                    .rentalItemCategory
-                                                            ]
+                                        data?.content.map((rental) => (
+                                            <motion.tr
+                                                key={rental.orderId}
+                                                variants={tableRowVariants}
+                                                initial="hidden"
+                                                animate="show"
+                                                className="hover:bg-gray-50"
+                                            >
+                                                <TableCell>
+                                                    {rental.orderId}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {rental.userName}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {format(
+                                                        new Date(
+                                                            rental.rentalDate
+                                                        ),
+                                                        "yyyy-MM-dd"
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {format(
+                                                        new Date(
+                                                            rental.returnDate
+                                                        ),
+                                                        "yyyy-MM-dd"
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge>
+                                                        {statusMap[
+                                                            rental.status
+                                                        ] || rental.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    ${rental.price.toFixed(2)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        onClick={() =>
+                                                            handleReturn(
+                                                                rental.orderId
+                                                            )
                                                         }
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {format(
-                                                            new Date(
-                                                                rental.rentalDate
-                                                            ),
-                                                            "yyyy-MM-dd"
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {format(
-                                                            new Date(
-                                                                rental.returnDate
-                                                            ),
-                                                            "yyyy-MM-dd"
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <span
-                                                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                                rental.status ===
-                                                                "ACTIVE"
-                                                                    ? "bg-green-100 text-green-800"
-                                                                    : rental.status ===
-                                                                      "OVERDUE"
-                                                                    ? "bg-red-100 text-red-800"
-                                                                    : "bg-gray-100 text-gray-800"
-                                                            }`}
-                                                        >
-                                                            {rental.status}
-                                                        </span>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        $
-                                                        {rental.price.toFixed(
-                                                            2
-                                                        )}
-                                                    </TableCell>
-                                                </motion.tr>
-                                            ))}
-                                        </motion.tbody>
+                                                        disabled={
+                                                            rental.status ===
+                                                                "RETURNED" ||
+                                                            updating.has(
+                                                                rental.orderId
+                                                            )
+                                                        }
+                                                        className="bg-blue-500 text-white hover:bg-blue-600"
+                                                    >
+                                                        {updating.has(
+                                                            rental.orderId
+                                                        )
+                                                            ? "처리 중..."
+                                                            : "반납 처리"}
+                                                    </Button>
+                                                </TableCell>
+                                            </motion.tr>
+                                        ))
                                     )}
                                 </AnimatePresence>
                             </TableBody>
                         </Table>
                     </div>
                     {data && (
-                        <motion.div
-                            className="mt-6 flex justify-between items-center"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                        >
+                        <div className="flex justify-between mt-4">
                             <Button
                                 onClick={() =>
-                                    setPage((prev) => Math.max(0, prev - 1))
+                                    setPage((prev) => Math.max(prev - 1, 0))
                                 }
                                 disabled={page === 0}
-                                className="flex items-center transition-all duration-300 hover:bg-primary hover:text-white"
                             >
-                                <ChevronLeft className="mr-2 h-4 w-4" /> 이전
+                                <ChevronLeft className="mr-2" /> 이전
                             </Button>
-                            <span className="text-sm font-medium">
+                            <span>
                                 페이지 {page + 1} / {data.totalPages}
                             </span>
                             <Button
                                 onClick={() =>
                                     setPage((prev) =>
-                                        Math.min(data.totalPages - 1, prev + 1)
+                                        Math.min(prev + 1, data.totalPages - 1)
                                     )
                                 }
                                 disabled={page === data.totalPages - 1}
-                                className="flex items-center transition-all duration-300 hover:bg-primary hover:text-white"
                             >
-                                다음 <ChevronRight className="ml-2 h-4 w-4" />
+                                다음 <ChevronRight className="ml-2" />
                             </Button>
-                        </motion.div>
+                        </div>
                     )}
                 </CardContent>
             </Card>
