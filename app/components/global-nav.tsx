@@ -63,7 +63,7 @@ export function GlobalNav({ idToken }: { idToken: string }) {
                                 height={40}
                             />
                             {/* "우리캠핑" 텍스트로 변경 */}
-                            <span className="ml-2 text-lg font-bold text-gray-900 hidden sm:block">
+                            <span className="ml-2 text-lg font-bold text-gray-900  sm:block">
                                 우리캠핑
                             </span>
                         </Link>
