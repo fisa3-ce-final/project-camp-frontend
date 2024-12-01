@@ -34,11 +34,10 @@ export interface RentalItemsResponse {
 }
 
 export interface Rental {
-    rentalId: number;
+    orderId: number;
     userId: number;
     userName: string;
-    rentalItemName: string;
-    rentalItemCategory: string;
+    orderStatus: string;
     rentalDate: string;
     returnDate: string;
     status: string;

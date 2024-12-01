@@ -1,8 +1,10 @@
 "use client";
+
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { Star } from "lucide-react"; // Using Star icon from lucide-react
-import { categoryMap, categoryMapEngToKor } from "@/app/types/category-map";
+import { Star } from "lucide-react";
+import { categoryMapEngToKor } from "@/app/types/category-map";
 
 interface RentalItemCardProps {
     nickname: string;
@@ -12,6 +14,7 @@ interface RentalItemCardProps {
     rating: number;
     category: string;
     rentalImageUrl: string;
+    className?: string;
 }
 
 export function RentalItemCard({
@@ -22,72 +25,53 @@ export function RentalItemCard({
     rating,
     category,
     rentalImageUrl,
+    className,
 }: RentalItemCardProps) {
-    // Helper to format price as "15,000원/일"
     const formatPrice = (price: number) => `${price.toLocaleString()}원/일`;
 
-    // Render stars based on the rating
     const renderStars = (rating: number) => {
-        const fullStars = Math.floor(rating); // Number of filled stars
-        const stars = [];
-
-        for (let i = 0; i < 5; i++) {
-            stars.push(
-                <Star
-                    key={i}
-                    size={20}
-                    className={
-                        i < fullStars ? "text-yellow-400" : "text-gray-300"
-                    }
-                    fill="currentColor" // Ensures the star is solid if filled
-                    aria-label={`${i + 1} Star`}
-                />
-            );
-        }
-        return stars;
+        const fullStars = Math.floor(rating);
+        return Array.from({ length: 5 }, (_, i) => (
+            <Star
+                key={i}
+                size={16}
+                className={i < fullStars ? "text-yellow-400" : "text-gray-300"}
+                fill="currentColor"
+                aria-label={`${i + 1} Star`}
+            />
+        ));
     };
 
     return (
-        <div className="w-full">
-            <div
-                className="cursor-pointer overflow-hidden relative card h-96 rounded-md shadow-xl max-w-sm mx-auto flex flex-col justify-between p-4"
-                style={{
-                    backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url(${rentalImageUrl})`,
-                    backgroundSize: "cover",
-                }}
-            >
-                <div className="absolute w-full h-full top-0 left-0 transition duration-300 group-hover/card:bg-black opacity-60"></div>
-                <div className="flex flex-row items-center space-x-4 z-10">
-                    <Avatar className="h-10 w-10 rounded-full border-2 shrink-0">
-                        <AvatarImage
-                            src={userImageUrl}
-                            alt="아바타"
-                            className=" h-10 w-10 object-cover rounded-full"
-                        />
-                        <AvatarFallback className="h-10 w-10 flex items-center justify-center text-2xl font-bold text-white bg-gray-400 rounded-full"></AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                        <p className="font-semibold text-lg text-gray-50 relative z-10">
-                            {nickname}
-                        </p>
-                    </div>
+        <div className={cn("w-full max-w-sm mx-auto", className)}>
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="relative h-48 w-full">
+                    <img
+                        src={rentalImageUrl}
+                        alt={name}
+                        className="object-cover w-full h-full"
+                    />
                 </div>
-                <div className="text content mt-4">
-                    <h1 className="font-bold text-lg md:text-2xl text-gray-50 relative z-10">
-                        {name}
-                    </h1>
-                    {/* 카테고리 영어 값을 한글로 변환하여 표시 */}
-                    <p className="text-gray-300 text-sm mb-2">
+                <div className="p-4">
+                    <div className="flex items-center space-x-3 mb-2">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={userImageUrl} alt={nickname} />
+                            <AvatarFallback>{nickname[0]}</AvatarFallback>
+                        </Avatar>
+                        <p className="font-semibold text-sm">{nickname}</p>
+                    </div>
+                    <h2 className="font-bold text-lg mb-1 truncate">{name}</h2>
+                    <p className="text-sm text-gray-600 mb-2">
                         {categoryMapEngToKor[category] || category}
                     </p>
-                    <p className="font-bold text-xl text-gray-50 relative z-10 mb-4">
+                    <p className="font-bold text-lg text-blue-600 mb-2">
                         {formatPrice(price)}
                     </p>
-                    <div className="flex items-center space-x-1 relative z-10">
+                    <div className="flex items-center space-x-1">
                         {renderStars(rating)}
-                        {/* <span className="text-sm text-gray-400 ml-2">
-                            ({reviewCount})
-                        </span> */}
+                        <span className="text-sm text-gray-600 ml-2">
+                            ({rating.toFixed(1)})
+                        </span>
                     </div>
                 </div>
             </div>

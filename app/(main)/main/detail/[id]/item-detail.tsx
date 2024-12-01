@@ -100,8 +100,8 @@ const ItemDetail: FC<ItemDetailProps> = ({ itemDetail, idToken }) => {
                                         </CarouselItem>
                                     ))}
                                 </CarouselContent>
-                                <CarouselPrevious className="absolute left-[-5] top-1/2 transform -translate-y-1/2 -translate-x-4 z-10" />
-                                <CarouselNext className="absolute right-[-5] top-1/2 transform -translate-y-1/2 translate-x-4 z-10" />
+                                <CarouselPrevious className="absolute left-[-5px] top-1/2 transform -translate-y-1/2 -translate-x-4 z-10" />
+                                <CarouselNext className="absolute right-[-5px] top-1/2 transform -translate-y-1/2 translate-x-4 z-10" />
                             </Carousel>
                         ) : (
                             <div className="w-full aspect-square bg-gray-200 flex items-center justify-center rounded-lg">

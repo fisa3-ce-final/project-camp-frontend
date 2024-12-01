@@ -12,125 +12,90 @@ import {
     Backpack,
 } from "lucide-react";
 import { categoryMap } from "@/app/types/category-map";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface MainSidebarProps {
     onCategorySelect: (category: string) => void;
-    isOpen: boolean;
-    onClose: () => void;
 }
 
-export function MainSidebar({
-    onCategorySelect,
-    isOpen,
-    onClose,
-}: MainSidebarProps) {
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(
-        null
-    );
+export function MainSidebar({ onCategorySelect }: MainSidebarProps) {
+    const [selectedCategory, setSelectedCategory] = useState<string>("전체");
+    const [isOpen, setIsOpen] = useState(false);
 
     const handleCategoryClick = (categoryKey: string) => {
-        const category = categoryMap[categoryKey] || "ALL"; // Default to "ALL" if not found
+        const category = categoryMap[categoryKey] || "ALL";
         setSelectedCategory(categoryKey);
-        onCategorySelect(category); // 선택된 카테고리를 부모 컴포넌트로 전달
-        onClose(); // 카테고리 선택 시 사이드바 닫기 (모바일 용)
+        onCategorySelect(category);
+        setIsOpen(false);
     };
+
+    const categories = [
+        { key: "전체", icon: Menu, label: "전체 카테고리" },
+        { key: "텐트", icon: Tent, label: "텐트" },
+        { key: "배낭", icon: Backpack, label: "배낭" },
+        { key: "취사 도구", icon: Utensils, label: "취사 도구" },
+        { key: "침낭", icon: Bed, label: "침낭" },
+        { key: "캠핑 가구", icon: Sofa, label: "캠핑가구" },
+        { key: "조명", icon: Sun, label: "조명" },
+    ];
+
+    const SidebarContent = () => (
+        <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800">캠핑 용품</h2>
+            </div>
+            <ScrollArea className="flex-grow">
+                <div className="p-4">
+                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                        렌탈 품목
+                    </h3>
+                    <nav>
+                        <ul className="space-y-1">
+                            {categories.map((cat) => (
+                                <li key={cat.key}>
+                                    <Button
+                                        variant="ghost"
+                                        className={`w-full justify-start ${
+                                            selectedCategory === cat.key
+                                                ? "bg-blue-100 text-blue-700"
+                                                : ""
+                                        }`}
+                                        onClick={() =>
+                                            handleCategoryClick(cat.key)
+                                        }
+                                    >
+                                        <cat.icon className="mr-2 h-4 w-4" />
+                                        {cat.label}
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </div>
+            </ScrollArea>
+        </div>
+    );
 
     return (
         <>
-            {/* Overlay */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black opacity-50 z-40 md:hidden"
-                    onClick={onClose}
-                ></div>
-            )}
-            {/* Sidebar */}
-            <div
-                className={`fixed top-0 left-0 w-64 bg-gray-100 p-4 border-r z-50 min-h-screen transform ${
-                    isOpen ? "translate-x-0" : "-translate-x-full"
-                } transition-transform duration-300 ease-in-out md:static md:min-h-screen md:translate-x-0 overflow-y-auto`}
-            >
-                {/* Close button for mobile */}
-                <div className="flex justify-between items-center mb-4 md:hidden">
-                    <h2 className="text-xl font-bold">캠핑 용품</h2>
-                    <button onClick={onClose}>
-                        <X className="w-6 h-6" />
-                    </button>
-                </div>
-                {/* Sidebar content */}
-                <h2 className="text-xl font-bold mb-4 md:block hidden">
-                    캠핑 용품 렌탈 품목
-                </h2>
-                <ul className="space-y-4">
-                    <li
-                        className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${
-                            selectedCategory === "전체" ? "bg-blue-100" : ""
-                        }`}
-                        onClick={() => handleCategoryClick("전체")}
-                    >
-                        <Menu className="w-5 h-5" />
-                        <span>전체 카테고리</span>
-                    </li>
-                    <li
-                        className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${
-                            selectedCategory === "텐트" ? "bg-blue-100" : ""
-                        }`}
-                        onClick={() => handleCategoryClick("텐트")}
-                    >
-                        <Tent className="w-5 h-5" />
-                        <span>텐트</span>
-                    </li>
-                    <li
-                        className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${
-                            selectedCategory === "배낭" ? "bg-blue-100" : ""
-                        }`}
-                        onClick={() => handleCategoryClick("배낭")}
-                    >
-                        <Backpack className="w-5 h-5" />
-                        <span>배낭</span>
-                    </li>
-                    <li
-                        className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${
-                            selectedCategory === "취사 도구"
-                                ? "bg-blue-100"
-                                : ""
-                        }`}
-                        onClick={() => handleCategoryClick("취사 도구")}
-                    >
-                        <Utensils className="w-5 h-5" />
-                        <span>취사 도구</span>
-                    </li>
-                    <li
-                        className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${
-                            selectedCategory === "침낭" ? "bg-blue-100" : ""
-                        }`}
-                        onClick={() => handleCategoryClick("침낭")}
-                    >
-                        <Bed className="w-5 h-5" />
-                        <span>침낭</span>
-                    </li>
-                    <li
-                        className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${
-                            selectedCategory === "캠핑 가구"
-                                ? "bg-blue-100"
-                                : ""
-                        }`}
-                        onClick={() => handleCategoryClick("캠핑 가구")}
-                    >
-                        <Sofa className="w-5 h-5" />
-                        <span>캠핑가구</span>
-                    </li>
-                    <li
-                        className={`flex items-center space-x-2 p-2 rounded-md cursor-pointer ${
-                            selectedCategory === "조명" ? "bg-blue-100" : ""
-                        }`}
-                        onClick={() => handleCategoryClick("조명")}
-                    >
-                        <Sun className="w-5 h-5" />
-                        <span>조명</span>
-                    </li>
-                </ul>
-            </div>
+            {/* Mobile View */}
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="md:hidden">
+                        <Menu className="h-6 w-6" />
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-64">
+                    <SidebarContent />
+                </SheetContent>
+            </Sheet>
+
+            {/* Desktop View */}
+            <aside className="hidden md:block w-64 bg-white border-r border-gray-200 h-full">
+                <SidebarContent />
+            </aside>
         </>
     );
 }

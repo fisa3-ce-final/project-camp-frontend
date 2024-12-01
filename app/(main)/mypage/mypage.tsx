@@ -182,8 +182,7 @@ export function MyPage() {
                 exit={{ opacity: 0, y: -20 }}
                 className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-md space-y-10"
             >
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold">마이 페이지</h1>
+                <div className="flex justify-end items-center mb-6">
                     <Button
                         variant={isEditing ? "default" : "outline"}
                         onClick={handleEditToggle}
