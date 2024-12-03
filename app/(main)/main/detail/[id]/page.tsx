@@ -13,7 +13,8 @@ interface ItemDetailPageProps {
 }
 const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
     const session = await getServerSession(authOptions);
-    const response = await fetch(
+
+    const detailResponse = await fetch(
         process.env.BACKEND_URL + `/rental-items/${params.id}`,
         {
             method: "GET",
@@ -25,13 +26,31 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
         }
     );
 
-    const data: RentalItemDetail = await response.json();
+    const itemDetail: RentalItemDetail = await detailResponse.json();
+
+    const viewsResponse = await fetch(
+        process.env.BACKEND_URL + `/rental-items/${params.id}/views`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session?.user.id_token}`,
+            },
+            cache: "no-cache",
+        }
+    );
+
+    const viewsData = await viewsResponse.text;
 
     return (
         <div>
-            <ItemDetail itemDetail={data} idToken={session?.user.id_token!} />
+            <ItemDetail 
+                itemDetail={itemDetail}
+                idToken={session?.user.id_token!} 
+            />
         </div>
     );
 };
+
 
 export default ItemDetailPage;
