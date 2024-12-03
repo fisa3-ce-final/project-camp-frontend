@@ -29,7 +29,7 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
     const itemDetail: RentalItemDetail = await detailResponse.json();
 
     const viewsResponse = await fetch(
-        process.env.BACKEND_URL + `/rental-items/${params.id}/views`,
+        process.env.API_GATEWAY_ENDPOINT +`/${params.id}/view`,
         {
             method: "POST",
             headers: {
@@ -40,13 +40,13 @@ const ItemDetailPage: FC<ItemDetailPageProps> = async ({ params }) => {
         }
     );
 
-    const viewsData = await viewsResponse.text;
+    const viewsData = await viewsResponse.json();
 
     return (
         <div>
             <ItemDetail 
                 itemDetail={itemDetail}
-                idToken={session?.user.id_token!} 
+                idToken={session?.user.id_token!}
             />
         </div>
     );
