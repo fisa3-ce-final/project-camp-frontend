@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
 
+const padOrderId = (orderId) => {
+    return `ORDER-${orderId.toString().padStart(4, '0')}`;
+};
+
+const extractOriginalOrderId = (paddedOrderId) => {
+    return parseInt(paddedOrderId.replace('ORDER-', ''));
+};
+
 const CheckoutPage = ({ idToken }) => {
     const [amount, setAmount] = useState({
         currency: "KRW",
@@ -74,7 +82,11 @@ const CheckoutPage = ({ idToken }) => {
                 }
 
                 const paymentInfoData = await paymentInfoResponse.json();
-                setPaymentInfo(paymentInfoData);
+                setPaymentInfo({
+                    ...paymentInfoData,
+                    originalOrderId: paymentInfoData.orderId, // 원본 orderId 보존
+                    orderId: padOrderId(paymentInfoData.orderId) // Toss용 패딩된 orderId
+                });
 
                 // Toss Payments 위젯 초기화
                 const tossPayments = await loadTossPayments(clientKey);
@@ -138,7 +150,7 @@ const CheckoutPage = ({ idToken }) => {
                     Authorization: `Bearer ${idToken}`,
                 },
                 body: JSON.stringify({
-                    orderId: paymentInfo.orderId,
+                    orderId: paymentInfo.originalOrderId,
                     amount: amount.value,
                 }),
             });
@@ -175,7 +187,7 @@ const CheckoutPage = ({ idToken }) => {
                                 }
 
                                 await widgets.requestPayment({
-                                    orderId: paymentInfo.orderId.toString(),
+                                    orderId: paymentInfo.orderId,
                                     orderName: paymentInfo.orderName,
                                     successUrl:
                                         window.location.origin +

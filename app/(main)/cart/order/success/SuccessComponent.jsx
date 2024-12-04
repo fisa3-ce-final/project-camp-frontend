@@ -1,7 +1,12 @@
+
 "use client";
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getQueryClient } from "@/app/lib/get-query-client";
+
+const extractOriginalOrderId = (paddedOrderId) => {
+    return parseInt(paddedOrderId.replace('ORDER-', ''));
+};
 
 export default function SuccessComponent({ idToken }) {
     const router = useRouter();
@@ -9,9 +14,11 @@ export default function SuccessComponent({ idToken }) {
     const queryClient = getQueryClient();
 
     useEffect(() => {
+        const paddedOrderId = searchParams.get("orderId");
+        const originalOrderId = extractOriginalOrderId(paddedOrderId);
         // 1. URL에서 결제 정보 파라미터 추출
         const requestData = {
-            orderId: searchParams.get("orderId"),
+            orderId: originalOrderId,
             amount: searchParams.get("amount"),
             paymentKey: searchParams.get("paymentKey"),
         };
