@@ -10,7 +10,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, ShoppingCart, Tag } from "lucide-react";
+import { CalendarIcon, ShoppingCart, Tag, Trash2  } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -149,6 +149,28 @@ const CartList = ({ idToken }: { idToken: string }) => {
     const calculateFinalTotal = () => {
         return Math.floor(calculateTotal() - calculateDiscount());
     };
+    const handleDeleteCartItem = async (cartItemId: number) => {
+        try {
+            const response = await fetch(`/backend/cart-items/delete/${cartItemId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${idToken}`,
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to delete cart item");
+            }
+    
+            // Refresh cart data after successful deletion
+            await fetchCartData();
+            toast.success("상품이 장바구니에서 삭제되었습니다.");
+        } catch (error) {
+            console.error("Error deleting cart item:", error);
+            toast.error("상품 삭제에 실패했습니다.");
+        }
+    };
 
     const handleApplyRental = async () => {
         if (selectedItems.length === 0) {
@@ -191,8 +213,8 @@ const CartList = ({ idToken }: { idToken: string }) => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "예약에 실패했습니다.");
+                const errorData = await response.text();
+                throw new Error(errorData);
             }
 
             const result = await response.json();
@@ -265,49 +287,47 @@ const CartList = ({ idToken }: { idToken: string }) => {
                             transition={{ duration: 0.3 }}
                         >
                             <Card className="hover:shadow-md transition-shadow">
-                                <CardContent className="flex items-center p-4">
-                                    <Checkbox
-                                        checked={selectedItems.includes(
-                                            item.id
-                                        )}
-                                        onCheckedChange={() =>
-                                            handleSelectItem(item.id)
-                                        }
-                                        className="mr-4"
-                                    />
-                                    <img
-                                        src={
-                                            item.rentalItem.image[0]
-                                                ?.imageUrl ||
-                                            "/placeholder_rental_image.jpg"
-                                        }
-                                        alt={item.rentalItem.name}
-                                        className="w-20 h-20 object-cover rounded mr-4"
-                                    />
-                                    <div className="flex-grow">
-                                        <h3 className="font-medium">
-                                            {item.rentalItem.name}
-                                        </h3>
-                                        <p className="text-sm text-gray-600">
-                                            {
-                                                categoryMapEngToKor[
-                                                    item.rentalItem.category
-                                                ]
-                                            }
-                                        </p>
-                                        <p className="font-semibold">
-                                            {item.rentalItem.price.toLocaleString()}{" "}
-                                            원/일
-                                        </p>
-                                        <p className="text-sm text-gray-600">
-                                            수량: {item.quantity}
-                                        </p>
+                            <CardContent className="flex items-center p-4">
+                                <Checkbox
+                                    checked={selectedItems.includes(item.id)}
+                                    onCheckedChange={() => handleSelectItem(item.id)}
+                                    className="mr-4"
+                                />
+                                <img
+                                    src={item.rentalItem.image[0]?.imageUrl || "/placeholder_rental_image.jpg"}
+                                    alt={item.rentalItem.name}
+                                    className="w-20 h-20 object-cover rounded mr-4"
+                                />
+                                <div className="flex-grow">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="font-medium">{item.rentalItem.name}</h3>
+                                            <p className="text-sm text-gray-600">
+                                                {categoryMapEngToKor[item.rentalItem.category]}
+                                            </p>
+                                            <p className="font-semibold">
+                                                {item.rentalItem.price.toLocaleString()} 원/일
+                                            </p>
+                                            <p className="text-sm text-gray-600">
+                                                수량: {item.quantity}
+                                            </p>
+                                        </div>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            onClick={() => handleDeleteCartItem(item.id)}
+                                            className="text-red-500 hover:bg-red-50"
+                                        >
+                                            <Trash2 className="w-5 h-5" />
+                                        </Button>
                                     </div>
-                                </CardContent>
+                                </div>
+                            </CardContent>
                             </Card>
                         </motion.div>
                     ))}
                 </div>
+                
 
                 <div className="space-y-6">
                     <Card>
